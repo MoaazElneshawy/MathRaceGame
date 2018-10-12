@@ -13,25 +13,24 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.mathrace.mathrace.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class FastQuizActivity extends AppCompatActivity {
+public class FastQuizActivity extends AppCompatActivity implements RewardedVideoAdListener {
 
     @BindView(R.id.fast_quiz_tv_score)
     TextView mTvScore;
     @BindView(R.id.fast_quiz_btn_retry)
     Button retryButton;
-
-    private static final long GAME_LENGTH_MILLISECONDS = 3000;
-    private InterstitialAd interstitialAd;
-    private CountDownTimer countDownTimer;
-    private boolean gameIsInProgress;
-    private long timerMilliseconds;
-    AdRequest adRequest;
+    private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+    private static final String APP_ID = "ca-app-pub-3940256099942544~3347511713";
+    private RewardedVideoAd rewardedVideoAd;
     String TAG = "FastQuizActivity";
 
     @Override
@@ -46,101 +45,83 @@ public class FastQuizActivity extends AppCompatActivity {
         }
 
         MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
-
-        interstitialAd = new InterstitialAd(this);
-
-        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-
-        adRequest = new AdRequest.Builder().build();
-        interstitialAd.loadAd(adRequest);
-
-        if (interstitialAd.isLoaded()) {
-            interstitialAd.show();
-            Log.e(TAG, "show");
-        }
-
-
-        interstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                startGame();
-            }
-        });
+        rewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        rewardedVideoAd.setRewardedVideoAdListener(this);
+        loadRewardedVideoAd();
 
     }
 
-
-    private void createTimer(final long milliseconds) {
-        // Create the game timer, which counts down to the end of the level
-        // and shows the "retry" button.
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
+    private void loadRewardedVideoAd() {
+        if (!rewardedVideoAd.isLoaded()) {
+            rewardedVideoAd.loadAd(AD_UNIT_ID, new AdRequest.Builder().build());
         }
-        countDownTimer = new CountDownTimer(milliseconds, 50) {
-            @Override
-            public void onTick(long millisUnitFinished) {
-                timerMilliseconds = millisUnitFinished;
-                mTvScore.setText("seconds remaining: " + ((millisUnitFinished / 1000) + 1));
-            }
-
-            @Override
-            public void onFinish() {
-                gameIsInProgress = false;
-                mTvScore.setText("done!");
-                retryButton.setVisibility(View.VISIBLE);
-            }
-        };
     }
 
     @Override
     public void onResume() {
-        // Start or resume the game.
         super.onResume();
-
-        if (gameIsInProgress) {
-            resumeGame(timerMilliseconds);
-        }
+        rewardedVideoAd.resume(this);
     }
 
     @Override
     public void onPause() {
-        // Cancel the timer if the game is paused.
-        if (countDownTimer != null)
-            countDownTimer.cancel();
         super.onPause();
+        rewardedVideoAd.pause(this);
     }
 
-    private void showInterstitial() {
-        // Show the ad if it's ready. Otherwise toast and restart the game.
-        if (interstitialAd != null && interstitialAd.isLoaded()) {
-            interstitialAd.show();
-        } else {
-            Toast.makeText(this, "Ad did not load", Toast.LENGTH_SHORT).show();
-            startGame();
+    private void showRewardedVideo() {
+        if (rewardedVideoAd.isLoaded()) {
+            rewardedVideoAd.show();
         }
-    }
-
-    private void startGame() {
-        // Request a new ad if one isn't already loaded, hide the button, and kick off the timer.
-        if (!interstitialAd.isLoading() && !interstitialAd.isLoaded()) {
-            adRequest = new AdRequest.Builder().build();
-            interstitialAd.loadAd(adRequest);
-        }
-
-        retryButton.setVisibility(View.INVISIBLE);
-        resumeGame(GAME_LENGTH_MILLISECONDS);
-    }
-
-    private void resumeGame(long milliseconds) {
-        // Create a new timer for the correct length and start it.
-        gameIsInProgress = true;
-        timerMilliseconds = milliseconds;
-        createTimer(milliseconds);
-        countDownTimer.start();
     }
 
     @OnClick(R.id.fast_quiz_btn_retry)
     void setRetryButton() {
-        showInterstitial();
+        showRewardedVideo();
+    }
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+        Log.e(TAG,"onRewardedVideoAdLoaded");
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+        Log.e(TAG,"onRewardedVideoAdOpened");
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+        Log.e(TAG,"onRewardedVideoStarted");
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        Log.e(TAG,"onRewardedVideoAdClosed");
+        loadRewardedVideoAd();
+
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+        Log.e(TAG,"onRewarded");
+        loadRewardedVideoAd();
+
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+        Log.e(TAG,"onRewardedVideoAdLeftApplication");
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+        Log.e(TAG,"onRewardedVideoAdFailedToLoad");
+    }
+
+    @Override
+    public void onRewardedVideoCompleted() {
+        Log.e(TAG,"onRewardedVideoCompleted");
+        mTvScore.setText("Yeah !");
     }
 }

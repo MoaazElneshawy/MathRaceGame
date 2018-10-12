@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
     Dialog mDialogStart, mDialogSettings;
     MediaPlayer mClick, mBackground;
     private AdView mAdView;
-
+    private InterstitialAd interstitialAd;
+    AdRequest adRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
         setAdmob();
 
 
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
+        interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        adRequest = new AdRequest.Builder().build();
+        interstitialAd.loadAd(adRequest);
     }
 
     void doIn(long time) {
@@ -97,7 +105,23 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.main_btn_to_quiz)
     void toFastQuiz() {
-        startActivity(new Intent(MainActivity.this, FastQuizActivity.class));
+        interstitialAd.show();
+
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                startActivity(new Intent(MainActivity.this, FastQuizActivity.class));
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!interstitialAd.isLoaded()){
+            adRequest = new AdRequest.Builder().build();
+            interstitialAd.loadAd(adRequest);
+        }
     }
 
     private void setDialogStart() {
