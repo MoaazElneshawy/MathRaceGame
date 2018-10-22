@@ -1,0 +1,59 @@
+package com.mathrace.mathrace.Utilities;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+public class SharedPrefUtilities {
+    SharedPreferences sharedPreferences;
+
+    public SharedPrefUtilities(Context context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    private static final String AUDIO = "audio";
+    private static final String LANGUAGE = "language";
+    private static final String HIGH_SCORE = "high_score";
+    private static final String PLAYED_QUIZ = "played_quiz";
+    private static final String WATCHED_VIDEO = "watched_video";
+
+    public void setAudio(boolean audio) {
+        sharedPreferences.edit().putBoolean(AUDIO, audio).apply();
+    }
+
+    public boolean getAUDIO() {
+        return sharedPreferences.getBoolean(AUDIO, false);
+    }
+
+    public void setLanguage(String language) {
+        sharedPreferences.edit().putString(LANGUAGE, language).apply();
+    }
+
+    public String getLANGUAGE() {
+        return sharedPreferences.getString(LANGUAGE, "en");
+    }
+
+    public void setHighScore(int score) {
+        sharedPreferences.edit().putInt(HIGH_SCORE, score).apply();
+    }
+
+    public int getHighScore() {
+        return sharedPreferences.getInt(HIGH_SCORE, 0);
+    }
+
+    public void setPlayedQuiz(int playedQuiz) {
+        sharedPreferences.edit().putInt(PLAYED_QUIZ, playedQuiz).apply();
+    }
+
+    public int getPlayedQuiz() {
+        return sharedPreferences.getInt(PLAYED_QUIZ, 0);
+    }
+
+    public void setWatchedVideo(int watchedVideo) {
+        sharedPreferences.edit().putInt(WATCHED_VIDEO, watchedVideo).apply();
+    }
+
+    public int getWatchedVideo() {
+        return sharedPreferences.getInt(WATCHED_VIDEO, 0);
+    }
+}

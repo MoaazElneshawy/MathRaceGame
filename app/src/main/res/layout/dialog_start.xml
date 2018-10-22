@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_margin="10dp"
+    android:layout_gravity="center_vertical"
     android:background="@drawable/bg_popup_base_panel"
-    android:layout_height="match_parent">
+    android:layout_height="150dp">
 
     <Button
         android:text="start"
