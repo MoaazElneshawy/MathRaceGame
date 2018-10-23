@@ -4,7 +4,6 @@
     <string name="timer">الوقت</string>
     <string name="score">النقاط</string>
     <string name="level">المستوى</string>
-    <string name="get_more_points">احصل على وقت اضافي</string>
     <string name="on">يعمل</string>
     <string name="off">لا يعمل</string>
     <string name="arabic">العربية</string>
@@ -12,5 +11,11 @@
     <string name="game_over">انتهت الوقت !</string>
     <string name="start_again">إبدأ من جديد</string>
     <string name="watch_video">مشاهدة فيديو</string>
-
+    <string name="watch_video_hint">احصل على 5 ثواني</string>
+    <string name="play_quiz">العب لعبة سريعة</string>
+    <string name="play_quiz_hint">اختبر مهاراتك و احصل على ثوان اضافية</string>
+    <string name="get_more_points">لقد حصلت على 5 ثوان</string>
+    <string name="game_over_score">لقد حصلت على</string>
+    <string name="start">ابدأ اللعبة</string>
+    <string name="save">حفظ</string>
 </resources>

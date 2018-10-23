@@ -3,7 +3,6 @@
     <string name="timer">Timer</string>
     <string name="score">Score</string>
     <string name="level">Level</string>
-    <string name="get_more_points">Get More Seconds</string>
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="arabic">Arabic</string>
@@ -11,4 +10,11 @@
     <string name="game_over">Game Over !</string>
     <string name="start_again">Start New Game</string>
     <string name="watch_video">Watch Video</string>
+    <string name="watch_video_hint">Get 5 seconds extra</string>
+    <string name="play_quiz">Play Quick Quiz</string>
+    <string name="play_quiz_hint">Test your skills and get extra seconds</string>
+    <string name="get_more_points">You got 5 seconds</string>
+    <string name="game_over_score">You got</string>
+    <string name="start">Start Game</string>
+    <string name="save">Save</string>
 </resources>

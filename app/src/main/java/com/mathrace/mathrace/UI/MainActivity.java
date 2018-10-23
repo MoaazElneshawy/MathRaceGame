@@ -1,5 +1,6 @@
 package com.mathrace.mathrace.UI;
 
+import android.animation.Animator;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -14,10 +15,13 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,6 +45,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTouch;
 
 import com.mathrace.mathrace.Utilities.BaseActivity;
 import com.mathrace.mathrace.Utilities.MathRaceQuestionsGenerator;
@@ -53,8 +58,6 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     TextView tvScore;
     @BindView(R.id.main_iv_setting)
     ImageView ivSettings;
-    @BindView(R.id.main_btn_to_quiz)
-    Button btnToFastQuiz;
     @BindView(R.id.main_btn_answer1)
     Button btnAnswer1;
     @BindView(R.id.main_btn_answer2)
@@ -69,11 +72,31 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     RelativeLayout mainLayout;
     @BindView(R.id.main_tv_timer)
     TextView tvTimer;
+    @BindView(R.id.main_quiz_layout)
+    LinearLayout layoutQuiz;
+    @BindView(R.id.main_game_over_layout)
+    LinearLayout layoutGameOver;
+    @BindView(R.id.main_btn_start)
+    Button btnStart;
+    @BindView(R.id.main_game_over_btn_watch_video)
+    Button btnWatchVideo;
+    @BindView(R.id.main_game_over_btn_to_quiz)
+    Button btnPlayQuiz;
+    @BindView(R.id.main_game_over_btn_start_again)
+    Button btnStartAgain;
+    @BindView(R.id.main_game_over_tv_score)
+    TextView tvGameOverScore;
+    @BindView(R.id.main_game_over_tv_quiz_hint)
+    TextView tvQuizHint;
+    @BindView(R.id.main_game_over_tv_video_hint)
+    TextView tvVideoHint;
+
+
     CountDownTimer mCountDownTimer;
-    long mainCounter = 10000, currentCounter = 0, moreTime;
-    int current_level = 1, number_of_questions = 1, watched_video_count = 0, played_quiz_count;
+    long mainCounter = 20000, currentCounter = 0;
+    int current_level = 1, number_of_questions = 1, watched_video_count = 0, played_quiz_count, score = 0;
     public static final int REQUEST_CODE = 10;
-    Dialog mDialogStart, mDialogSettings, mDialogGameOver;
+    Dialog mDialogSettings;
     MediaPlayer mClick, mBackground;
     private AdView mAdView;
     private InterstitialAd interstitialAd;
@@ -82,8 +105,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     AdRequest adRequest;
     TaskModel model;
     public static final String TAG = "MainActivity";
-    boolean isCorrect, stop = false, sound, isStarted = false;
-    int score = 0;
+    boolean isCorrect, sound;
     SharedPrefUtilities sharedPrefUtilities;
     String language;
 
@@ -102,9 +124,8 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         sound = sharedPrefUtilities.getAUDIO();
         played_quiz_count = sharedPrefUtilities.getPlayedQuiz();
         watched_video_count = sharedPrefUtilities.getWatchedVideo();
-        mClick = MediaPlayer.create(this, R.raw.button_click);
+        mClick = MediaPlayer.create(MainActivity.this, R.raw.button_click);
         mBackground = MediaPlayer.create(this, R.raw.audio);
-        setDialogStart();
         setAdmob();
 
         interstitialAd = new InterstitialAd(this);
@@ -125,38 +146,90 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         mCountDownTimer = new CountDownTimer(time, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                tvScore.setText(getResources().getString(R.string.score) + " : " + score + "\n" + getResources().getString(R.string.level) + "  : " + current_level);
+                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
+                        "\n" + getResources().getString(R.string.level) + "  : " + current_level);
                 currentCounter = millisUntilFinished;
                 btnAnswer1.setEnabled(true);
                 btnAnswer2.setEnabled(true);
                 btnAnswer3.setEnabled(true);
                 btnAnswer4.setEnabled(true);
                 tvTimer.setText("" + millisUntilFinished / 1000);
+                ivSettings.setVisibility(View.INVISIBLE);
             }
 
             public void onFinish() {
                 tvTimer.setText("0");
-                tvScore.setText(getResources().getString(R.string.score) + " : " + score + "\n" + getResources().getString(R.string.timer) + " : " + current_level);
-                Toast.makeText(MainActivity.this, "Game over !", Toast.LENGTH_SHORT).show();
+                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
+                        "\n" + getResources().getString(R.string.level) + " : " + current_level);
+
                 btnAnswer1.setEnabled(false);
                 btnAnswer2.setEnabled(false);
                 btnAnswer3.setEnabled(false);
                 btnAnswer4.setEnabled(false);
-                stop = true;
-                setDialogGameOver(String.valueOf(score));
+                ivSettings.setVisibility(View.VISIBLE);
+                tvGameOverScore.setText(getResources().getString(R.string.game_over_score) + " " + score);
+                performAnimation(layoutQuiz, layoutGameOver);
             }
         }.start();
     }
 
+
+    private void performAnimation(final View viewToHide, final View viewToShow) {
+        viewToHide.animate().alpha(0.0f);
+        viewToShow.animate().alpha(1.0f).setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                viewToHide.setVisibility(View.GONE);
+                viewToShow.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
+            }
+        });
+    }
 
     @OnClick(R.id.main_iv_setting)
     void setIvSettings() {
         setDialogSettings();
     }
 
-    @OnClick(R.id.main_btn_to_quiz)
+
+    @OnClick(R.id.main_btn_start)
+    void doStart() {
+        if (sound) mClick.start();
+        doIn(mainCounter);
+        getNewQuestion(0);
+        performAnimation(btnStart, layoutQuiz);
+    }
+
+    @OnClick(R.id.main_game_over_btn_start_again)
+    void startAgain() {
+        if (sound) mClick.start();
+        doIn(mainCounter);
+        getNewQuestion(0);
+        performAnimation(layoutGameOver, layoutQuiz);
+    }
+
+    @OnClick(R.id.main_game_over_btn_watch_video)
+    void watchVideo() {
+        showRewardedVideo();
+    }
+
+    @OnClick(R.id.main_game_over_btn_to_quiz)
     void toFastQuiz() {
-//        getMorePoints();
+        getMorePoints();
     }
 
     @Override
@@ -167,13 +240,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             interstitialAd.loadAd(adRequest);
         }
         rewardedVideoAd.resume(this);
-        if (!isStarted) {
-            if (mDialogStart == null) {
-                setDialogStart();
-            } else {
-                mDialogStart.show();
-            }
-        }
+
     }
 
     @Override
@@ -194,95 +261,10 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             @Override
             public void onAdClosed() {
                 Intent intent = new Intent(MainActivity.this, FastQuizActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
+//                startActivityForResult(intent, REQUEST_CODE);
+                Toast.makeText(MainActivity.this, "Yeah !", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                moreTime = data.getLongExtra("result", 50000);
-            }
-            if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Oops !", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void setDialogStart() {
-        mDialogStart = new Dialog(this);
-        mDialogStart.setContentView(R.layout.dialog_start);
-        mDialogStart.setCancelable(false);
-        try {
-            mDialogStart.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-            mDialogStart.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Button mBtnStart = mDialogStart.findViewById(R.id.dialog_start_btn_start);
-        mBtnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doIn(mainCounter);
-                mDialogStart.dismiss();
-                mClick.start();
-                getNewQuestion(0);
-                isStarted = true;
-            }
-        });
-        mDialogStart.show();
-    }
-
-    private void setDialogGameOver(String score) {
-        mDialogGameOver = new Dialog(this);
-        mDialogGameOver.setContentView(R.layout.dialog_game_over);
-        try {
-            mDialogGameOver.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-            mDialogGameOver.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mDialogGameOver.setCancelable(false);
-        TextView tvScore = mDialogGameOver.findViewById(R.id.dialog_game_tv_score);
-        Button btnStartAgain = mDialogGameOver.findViewById(R.id.dialog_game_btn_start);
-        Button btnGetPoints = mDialogGameOver.findViewById(R.id.dialog_game_btn_more_points);
-        Button btnWatchVideo = mDialogGameOver.findViewById(R.id.dialog_game_btn_watch_video);
-
-        if (watched_video_count == 5 || (!rewardedVideoAd.isLoaded())) {
-            btnWatchVideo.setVisibility(View.GONE);
-        }
-        tvScore.setText("You got " + score);
-        btnStartAgain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doIn(mainCounter);
-                mDialogGameOver.dismiss();
-                mClick.start();
-                getNewQuestion(0);
-            }
-        });
-        btnGetPoints.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDialogGameOver.dismiss();
-//                getMorePoints();
-            }
-        });
-        btnWatchVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (rewardedVideoAd.isLoaded()) {
-                    showRewardedVideo();
-                    mDialogGameOver.dismiss();
-                }
-            }
-        });
-        mDialogGameOver.show();
-
     }
 
     private void setDialogSettings() {
@@ -294,18 +276,30 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mDialogSettings.setCancelable(false);
+        mDialogSettings.setCancelable(true);
         ImageView mIvAudio = mDialogSettings.findViewById(R.id.dialog_setting_iv_audio);
         ImageView mIvLang = mDialogSettings.findViewById(R.id.dialog_setting_iv_language);
         mIvAudio.getLayoutParams().height = 100;
         mIvAudio.getLayoutParams().width = 100;
         mIvLang.getLayoutParams().height = 100;
         mIvLang.getLayoutParams().width = 100;
-        Button btnSave = mDialogSettings.findViewById(R.id.dialog_setting_btn_save);
+        final Button btnSave = mDialogSettings.findViewById(R.id.dialog_setting_btn_save);
         final RadioButton rbSoundOn = mDialogSettings.findViewById(R.id.dialog_setting_rb_audio_on);
         RadioButton rbSoundOff = mDialogSettings.findViewById(R.id.dialog_setting_rb_audio_off);
         final RadioButton rbLangEn = mDialogSettings.findViewById(R.id.dialog_setting_rb_lang_en);
         RadioButton rbLangAr = mDialogSettings.findViewById(R.id.dialog_setting_rb_lang_ar);
+        language = sharedPrefUtilities.getLANGUAGE();
+        if (language.equals("ar")) {
+            rbLangAr.setChecked(true);
+        } else {
+            rbLangAr.setChecked(true);
+        }
+        sound = sharedPrefUtilities.getAUDIO();
+        if (sound) {
+            rbSoundOn.setChecked(true);
+        } else {
+            rbSoundOff.setChecked(true);
+        }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -321,13 +315,18 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                 } else {
                     sound = false;
                 }
+
                 sharedPrefUtilities.setAudio(sound);
-                Log.e(TAG, "language >> " + language);
+                sharedPrefUtilities.setLanguage(language);
+
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
                     setApplicationLanguage(language);
                 } else {
                     languageConfiguration(language);
                 }
+
+                if (sound) mClick.start();
+
                 mDialogSettings.dismiss();
             }
 
@@ -348,6 +347,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     @OnClick({R.id.main_btn_answer1, R.id.main_btn_answer2, R.id.main_btn_answer3, R.id.main_btn_answer4})
     public void doCheck(View view) {
+        if (sound) mClick.start();
 
         String value1 = "0";
         String value2 = "1";
@@ -397,14 +397,13 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             currentCounter += 1000;
             doIn(currentCounter);
         }
-        if (!stop) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getNewQuestion(current_level);
-                }
-            }, 500);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getNewQuestion(current_level);
+            }
+        }, 500);
+
     }
 
     private void getNewQuestion(int current_level) {
@@ -443,24 +442,16 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     private void startNewLevel() {
         if (number_of_questions == 10) {
             current_level++;
-            Toast.makeText(this, "Level " + current_level, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.level) + " " + current_level, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mDialogGameOver != null) {
-            mDialogGameOver.cancel();
-            mDialogGameOver = null;
-        }
         if (mDialogSettings != null) {
             mDialogSettings.cancel();
             mDialogSettings = null;
-        }
-        if (mDialogStart != null) {
-            mDialogStart.cancel();
-            mDialogStart = null;
         }
     }
 
@@ -488,24 +479,31 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     @Override
     public void onRewardedVideoStarted() {
         Log.e(TAG, "onRewardedVideoStarted");
-        mDialogGameOver.cancel();
     }
 
     @Override
     public void onRewardedVideoAdClosed() {
         Log.e(TAG, "onRewardedVideoAdClosed");
         loadRewardedVideoAd();
-//        mDialogGameOver.show();
+        if (rewardItem != null) {
+            doIn(5000);
+            getNewQuestion(current_level);
+            Toast.makeText(this, getResources().getString(R.string.get_more_points), Toast.LENGTH_SHORT).show();
+            if (watched_video_count == 3) {
+                tvVideoHint.setVisibility(View.GONE);
+                btnWatchVideo.setVisibility(View.GONE);
+            }
+            performAnimation(layoutGameOver, layoutQuiz);
+        }
     }
+
+    RewardItem rewardItem;
 
     @Override
     public void onRewarded(RewardItem rewardItem) {
         Log.e(TAG, "onRewarded");
-        loadRewardedVideoAd();
-        doIn(5000);
-        getNewQuestion(current_level);
-        Toast.makeText(this, "You got 5 seconds more", Toast.LENGTH_SHORT).show();
-        stop = false;
+        this.rewardItem = rewardItem;
+
     }
 
     @Override
@@ -537,20 +535,16 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         applicationConf.setLocale(newLocale);
         applicationRes.updateConfiguration(applicationConf,
                 applicationRes.getDisplayMetrics());
-
-        sharedPrefUtilities.setLanguage(newLanguage);
         recreate();
     }
 
     private void languageConfiguration(String language) {
-
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
         Configuration config = new Configuration();
         config.locale = locale;
         getBaseContext().getResources().updateConfiguration(config,
                 getBaseContext().getResources().getDisplayMetrics());
-        sharedPrefUtilities.setLanguage(language);
         recreate();
     }
 
