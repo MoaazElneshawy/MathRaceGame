@@ -17,5 +17,22 @@
     <string name="get_more_points">لقد حصلت على 5 ثوان</string>
     <string name="game_over_score">لقد حصلت على</string>
     <string name="start">ابدأ اللعبة</string>
+    <string name="settings">الإعدادات</string>
     <string name="save">حفظ</string>
+    <string name="share_on_facebook">شارك نتيجتك</string>
+    <string name="about">عن التطبيق</string>
+    <string name="back_hint">سوف تعود إلى صفحة البداية\nان قمت بهذا , سوف تخسر اللعبة الحالية</string>
+    <string name="back_to_start">عودة إلى صفحة البداية</string>
+    <string name="resume">استئناف اللعب</string>    <string name="new_high_score">نتيجة جديدة</string>
+    <string name="last_high_score">أعلى نتيجة كانت</string>
+
+    <string name="about_app">
+        Math-Race\n هي لعبة لاختبار مهاراتك في الرياضيات\n\n
+        اللعبة مصممة بوقت لمدة عشرون ثانية و يقل بالتدريج\n\n
+        بعد كل عشرة أسئلة يبدأ مستوى اعلى اكثر صعوبة\n\n
+        يمكنك تغيير اللغة و اعدادات الصوت من الاعدادات\n\n
+        التطبيق من ضمن تطبيقات \nBean Production\n
+        مالك الفكرة : عمرو مجدي\n
+        المطور : معاذ النشاوي
+    </string>
 </resources>

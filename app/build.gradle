@@ -37,4 +37,7 @@ dependencies {
     // AdMob
     implementation 'com.google.firebase:firebase-ads:16.0.1'
 
+    // facebook
+    implementation 'com.facebook.android:facebook-share:[4,5)'
+
 }

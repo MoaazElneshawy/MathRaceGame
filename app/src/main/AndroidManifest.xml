@@ -17,6 +17,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -26,6 +27,18 @@
         <activity
             android:name=".UI.FastQuizActivity"
             android:noHistory="true"
+            android:screenOrientation="portrait" />
+
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider{2048770595161110}"
+            android:exported="true" />
+
+        <activity
+            android:name=".UI.AboutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UI.StartActivity"
             android:screenOrientation="portrait"></activity>
     </application>
 

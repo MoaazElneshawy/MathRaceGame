@@ -12,6 +12,7 @@ public class SharedPrefUtilities {
     }
 
     private static final String AUDIO = "audio";
+    private static final String BG_AUDIO = "background_audio";
     private static final String LANGUAGE = "language";
     private static final String HIGH_SCORE = "high_score";
     private static final String PLAYED_QUIZ = "played_quiz";
@@ -22,7 +23,15 @@ public class SharedPrefUtilities {
     }
 
     public boolean getAUDIO() {
-        return sharedPreferences.getBoolean(AUDIO, false);
+        return sharedPreferences.getBoolean(AUDIO, true);
+    }
+
+    public void setBgAudio(boolean audio) {
+        sharedPreferences.edit().putBoolean(BG_AUDIO, audio).apply();
+    }
+
+    public boolean getBgAudio() {
+        return sharedPreferences.getBoolean(BG_AUDIO, true);
     }
 
     public void setLanguage(String language) {

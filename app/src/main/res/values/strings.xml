@@ -16,5 +16,23 @@
     <string name="get_more_points">You got 5 seconds</string>
     <string name="game_over_score">You got</string>
     <string name="start">Start Game</string>
+    <string name="settings">Settings</string>
     <string name="save">Save</string>
+    <string name="share_on_facebook">Share Your Score</string>
+    <string name="about">About</string>
+    <string name="new_high_score">Yeah , new high score</string>
+    <string name="last_high_score">your last high score</string>
+    <string name="back_hint">You will go back to start screen\nIf you go back , you will lose your current game</string>
+    <string name="back_to_start">Back To Start</string>
+    <string name="resume">Resume The Game</string>
+
+    <string name="about_app">
+        Math-Race is a game application to test your math skills\n\n
+        The application is designed with a 20s timer which will count down\n\n
+        After every 10 questions , a new level starts with more complexity\n\n
+        You can select language and audio status from setting icon\n\n
+        This application is a product for Bean Production\n\n
+        Idea Owner : Amr Magdy\n
+        Developer : Moaaz Elneshawy
+    </string>
 </resources>

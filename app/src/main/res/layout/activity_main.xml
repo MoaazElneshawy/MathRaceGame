@@ -144,20 +144,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/bg_popup_base_panel"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:orientation="vertical"
         android:paddingStart="40dp"
         android:paddingTop="10dp"
         android:paddingEnd="40dp"
-        android:paddingBottom="10dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:paddingBottom="10dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_loser"
+            android:id="@+id/main_game_over_iv_status"/>
 
         <TextView
             android:id="@+id/main_game_over_tv_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/score"
+            android:gravity="center_horizontal"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -214,6 +224,22 @@
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"
             android:textSize="16sp" />
+
+        <!--<Button-->
+        <!--android:id="@+id/main_game_over_btn_share_on_fb"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:layout_marginTop="15dp"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:background="@drawable/fb_button"-->
+        <!--android:drawableStart="@drawable/share_url_24dp"-->
+        <!--android:drawablePadding="15dp"-->
+        <!--android:padding="15sp"-->
+        <!--android:text="@string/share_on_facebook"-->
+        <!--android:textAllCaps="false"-->
+        <!--android:textColor="@color/colorWhite"-->
+        <!--android:textSize="16sp" />-->
     </LinearLayout>
 
     <Button
@@ -228,9 +254,11 @@
         android:paddingBottom="20dp"
         android:text="@string/start_again"
         android:textAllCaps="false"
+
         android:textColor="@color/colorWhite"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
