@@ -5,15 +5,15 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_background">
+    android:background="@drawable/app_background"
+    android:layoutDirection="ltr">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/colorPrimary"
-        android:layoutDirection="ltr">
+        android:background="@color/colorPrimary">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -41,9 +41,10 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:gravity="center_horizontal"
-                android:text="score"
+                android:text="@string/app_name"
                 android:textColor="@color/colorWhite"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/main_iv_setting"
@@ -59,10 +60,9 @@
     <LinearLayout
         android:id="@+id/main_quiz_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@id/adView"
         android:layout_below="@id/main_toolbar"
-        android:layoutDirection="ltr"
         android:orientation="vertical"
         android:padding="10dp"
         android:visibility="gone">
@@ -139,13 +139,17 @@
         </LinearLayout>
     </LinearLayout>
 
+
     <LinearLayout
         android:id="@+id/main_game_over_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/bg_popup_base_panel"
         android:gravity="center"
         android:orientation="vertical"
@@ -156,27 +160,27 @@
         android:paddingBottom="10dp">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:id="@+id/main_game_over_iv_status"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:padding="5dp"
-            android:src="@drawable/ic_loser"
-            android:id="@+id/main_game_over_iv_status"/>
+            android:src="@drawable/ic_loser" />
 
         <TextView
             android:id="@+id/main_game_over_tv_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/score"
             android:gravity="center_horizontal"
+            android:text="@string/score"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/main_game_over_btn_watch_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/button_background_one"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
@@ -196,7 +200,7 @@
             android:id="@+id/main_game_over_btn_to_quiz"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/button_background_three"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
@@ -216,7 +220,7 @@
             android:id="@+id/main_game_over_btn_start_again"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/button_background_two"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
@@ -225,21 +229,21 @@
             android:textColor="@color/colorWhite"
             android:textSize="16sp" />
 
-        <!--<Button-->
-        <!--android:id="@+id/main_game_over_btn_share_on_fb"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center_horizontal"-->
-        <!--android:layout_marginTop="15dp"-->
-        <!--android:layout_marginBottom="10dp"-->
-        <!--android:background="@drawable/fb_button"-->
-        <!--android:drawableStart="@drawable/share_url_24dp"-->
-        <!--android:drawablePadding="15dp"-->
-        <!--android:padding="15sp"-->
-        <!--android:text="@string/share_on_facebook"-->
-        <!--android:textAllCaps="false"-->
-        <!--android:textColor="@color/colorWhite"-->
-        <!--android:textSize="16sp" />-->
+        <Button
+            android:id="@+id/main_game_over_btn_share_on_fb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/fb_button"
+            android:drawableStart="@drawable/share_url_24dp"
+            android:drawablePadding="15dp"
+            android:padding="15sp"
+            android:text="@string/share_on_facebook"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <Button
@@ -254,7 +258,6 @@
         android:paddingBottom="20dp"
         android:text="@string/start_again"
         android:textAllCaps="false"
-
         android:textColor="@color/colorWhite"
         android:textSize="18sp"
         android:textStyle="bold"

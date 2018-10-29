@@ -43,7 +43,7 @@ public class StartActivity extends BaseActivity {
     boolean sound, bg_sound;
     Dialog mDialogAbout, mDialogSettings;
     MediaPlayer mClick, mBackground;
-    SharedPrefUtilities prefUtilities;
+    SharedPrefUtilities sharedPrefUtilities;
     int bg_audio_position = 0;
     String language;
 
@@ -58,11 +58,13 @@ public class StartActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        prefUtilities = new SharedPrefUtilities(this);
+        sharedPrefUtilities = new SharedPrefUtilities(this);
         mClick = MediaPlayer.create(StartActivity.this, R.raw.button_click);
         mBackground = MediaPlayer.create(this, R.raw.background_audio);
         mBackground.setLooping(true);
         setDialogAbout();
+        sharedPrefUtilities.setWatchedVideo(0);
+        sharedPrefUtilities.setPlayedQuiz(0);
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
         adRequest = new AdRequest.Builder().build();
@@ -74,7 +76,7 @@ public class StartActivity extends BaseActivity {
                 mBackground.seekTo(bg_audio_position);
             }
         }
-        if (prefUtilities.getBgAudio()) {
+        if (sharedPrefUtilities.getBgAudio()) {
             mBackground.start();
         }
     }
@@ -82,8 +84,18 @@ public class StartActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (prefUtilities.getBgAudio())
-            mBackground.stop();
+        Log.e(TAG, "onPause");
+
+        if (sharedPrefUtilities.getBgAudio())
+            mBackground.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG, "OnResume");
+        if (sharedPrefUtilities.getBgAudio() && !mBackground.isPlaying())
+            mBackground.start();
     }
 
     private void setDialogSettings() {
@@ -112,19 +124,19 @@ public class StartActivity extends BaseActivity {
         RadioButton rbBgSoundOff = mDialogSettings.findViewById(R.id.dialog_setting_rb_bg_audio_off);
         final RadioButton rbLangEn = mDialogSettings.findViewById(R.id.dialog_setting_rb_lang_en);
         RadioButton rbLangAr = mDialogSettings.findViewById(R.id.dialog_setting_rb_lang_ar);
-        language = prefUtilities.getLANGUAGE();
+        language = sharedPrefUtilities.getLANGUAGE();
         if (language.equals("ar")) {
             rbLangAr.setChecked(true);
         } else {
             rbLangEn.setChecked(true);
         }
-        sound = prefUtilities.getAUDIO();
+        sound = sharedPrefUtilities.getAUDIO();
         if (sound) {
             rbSoundOn.setChecked(true);
         } else {
             rbSoundOff.setChecked(true);
         }
-        bg_sound = prefUtilities.getBgAudio();
+        bg_sound = sharedPrefUtilities.getBgAudio();
         if (bg_sound) {
             rbBgSoundOn.setChecked(true);
         } else {
@@ -150,11 +162,11 @@ public class StartActivity extends BaseActivity {
                     bg_sound = false;
                 }
 
-                prefUtilities.setAudio(sound);
-                prefUtilities.setBgAudio(bg_sound);
+                sharedPrefUtilities.setAudio(sound);
+                sharedPrefUtilities.setBgAudio(bg_sound);
 
-                if (!prefUtilities.getLANGUAGE().equals(language)) {
-                    prefUtilities.setLanguage(language);
+                if (!sharedPrefUtilities.getLANGUAGE().equals(language)) {
+                    sharedPrefUtilities.setLanguage(language);
                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
                         setApplicationLanguage(language);
                     } else {
@@ -217,7 +229,7 @@ public class StartActivity extends BaseActivity {
         if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
             return;
         }
-        if (prefUtilities.getAUDIO()) {
+        if (sharedPrefUtilities.getAUDIO()) {
             mClick.start();
         }
         goToGame();
@@ -262,7 +274,7 @@ public class StartActivity extends BaseActivity {
 
     @OnClick(R.id.splash_btn_about)
     void toAbout() {
-        if (prefUtilities.getAUDIO()) {
+        if (sharedPrefUtilities.getAUDIO()) {
             mClick.start();
         }
         if (mDialogAbout == null) {

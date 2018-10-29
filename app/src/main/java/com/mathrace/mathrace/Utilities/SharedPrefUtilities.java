@@ -17,6 +17,15 @@ public class SharedPrefUtilities {
     private static final String HIGH_SCORE = "high_score";
     private static final String PLAYED_QUIZ = "played_quiz";
     private static final String WATCHED_VIDEO = "watched_video";
+    private static final String QUIZ_HINT = "quiz_hint";
+
+    public void setQuizHint(boolean show) {
+        sharedPreferences.edit().putBoolean(QUIZ_HINT, show).apply();
+    }
+
+    public boolean getQuizHint() {
+        return sharedPreferences.getBoolean(QUIZ_HINT, true);
+    }
 
     public void setAudio(boolean audio) {
         sharedPreferences.edit().putBoolean(AUDIO, audio).apply();

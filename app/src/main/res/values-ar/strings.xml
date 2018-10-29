@@ -23,16 +23,32 @@
     <string name="about">عن التطبيق</string>
     <string name="back_hint">سوف تعود إلى صفحة البداية\nان قمت بهذا , سوف تخسر اللعبة الحالية</string>
     <string name="back_to_start">عودة إلى صفحة البداية</string>
-    <string name="resume">استئناف اللعب</string>    <string name="new_high_score">نتيجة جديدة</string>
+    <string name="resume">استئناف اللعب</string>
+    <string name="new_high_score">نتيجة جديدة</string>
     <string name="last_high_score">أعلى نتيجة كانت</string>
+    <string name="quiz_hint">
+        مرحباً بك في اللعبة السريعة\n
+        تعتمد اللعبة على ان تحصل على اكبر عدد من النقاط خلال عشرون ثانية\n
+        كل نقطة تحصل عليها تمثل ثانية سوف تضاف للعبة الحالية\n
+        يمكنك ان تلعب اللعبة السريعة خمس مرات فقط لكل لعبة\n
+        فكر جيداً لأن كل اجابة صحيحة ستزيد من نقاطك بنقطة و الإجابة الخاطئة ستقلل من نقاطك أيضا\n
+        المستوى سيزداد مع كل خمسة أسئلة سوف تجيب عليهم سواء كانت الأجابة صحيحة ام خطأ\n
+        استمتع باللعب
+    </string>
+    <string name="quiz_not_show_again">عدم إظهارها مرة أخرى</string>
+    <string name="quiz_failed">للأسف, \n لم تتمكن من الحصول على وقت \n يمكنك الحصول عليه في محاولة أخرى</string>
+    <string name="quiz_sucess">لقد اتممت اللعبة السريعة , اكمل اللعب الآن</string>
 
     <string name="about_app">
         Math-Race\n هي لعبة لاختبار مهاراتك في الرياضيات\n\n
-        اللعبة مصممة بوقت لمدة عشرون ثانية و يقل بالتدريج\n\n
-        بعد كل عشرة أسئلة يبدأ مستوى اعلى اكثر صعوبة\n\n
+        اللعبة مصممة بوقت لمدة خمسة عشر ثانية و يقل بالتدريج\n\n
+        بعد كل عشرة نقاط يبدأ مستوى اعلى اكثر صعوبة\n\n
         يمكنك تغيير اللغة و اعدادات الصوت من الاعدادات\n\n
         التطبيق من ضمن تطبيقات \nBean Production\n
         مالك الفكرة : عمرو مجدي\n
         المطور : معاذ النشاوي
     </string>
+    <string name="facebook_app_id">183684852536217</string>
+    <string name="facebook_protool_schema">fb183684852536217</string>
+
 </resources>

@@ -25,14 +25,28 @@
     <string name="back_hint">You will go back to start screen\nIf you go back , you will lose your current game</string>
     <string name="back_to_start">Back To Start</string>
     <string name="resume">Resume The Game</string>
-
+    <string name="quiz_hint">
+        Welcome to Quick Quiz\n
+        Fast Quiz depends on how many points you will get in 20s\n
+        Every point is equal to 1s will be added to your game\n
+        You can play Quick quiz only 5 times per game\n
+        Think carefully because the correct answer will increase your points and the worng one will decrease your points\n
+        The level will be passed with only 5 questions even were answered correctly or wrongly\n
+        Enjoy
+    </string>
+    <string name="quiz_sucess">You did the quiz , now continue the game</string>
+    <string name="quiz_failed">Oops, \n You didn\'t make it \n You will get it in the next time</string>
+    <string name="quiz_not_show_again">Do not show it again</string>
     <string name="about_app">
         Math-Race is a game application to test your math skills\n\n
-        The application is designed with a 20s timer which will count down\n\n
-        After every 10 questions , a new level starts with more complexity\n\n
+        The application is designed with a 15 timer which will count down\n\n
+        After every 10 points , a new level starts with more complexity\n\n
         You can select language and audio status from setting icon\n\n
         This application is a product for Bean Production\n\n
         Idea Owner : Amr Magdy\n
         Developer : Moaaz Elneshawy
     </string>
+    <string name="facebook_app_id">183684852536217</string>
+    <string name="facebook_protool_schema">fb183684852536217</string>
+
 </resources>

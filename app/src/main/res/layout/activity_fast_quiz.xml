@@ -2,10 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/app_background"
     android:id="@+id/fast_quiz_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/app_background"
+    android:layoutDirection="ltr">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/fast_quiz_toolbar"
@@ -15,7 +16,8 @@
         android:background="@color/colorPrimary">
 
         <RelativeLayout
-
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -27,25 +29,30 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:gravity="center_horizontal"
-                android:text="score"
+                android:text="@string/app_name"
+                android:textStyle="bold"
                 android:textColor="@color/colorWhite"
                 android:textSize="18sp" />
 
-            <ImageView
-                android:id="@+id/fast_quiz_iv_setting"
+            <TextView
+                android:id="@+id/fast_quiz_tv_timer"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:src="@drawable/ic_settings_black_24dp" />
+                android:background="@drawable/ic_chronometer"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp" />
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
+        android:id="@+id/fast_quiz_quiz_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/fast_quiz_btn_retry"
+        android:layout_above="@id/adView"
         android:layout_below="@id/fast_quiz_toolbar"
         android:orientation="vertical"
         android:padding="10dp">
@@ -120,14 +127,13 @@
         </LinearLayout>
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/fast_quiz_btn_retry"
-        android:layout_width="wrap_content"
+    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="10dp"
-        android:text="retry"
-        android:visibility="gone" />
+        android:layout_centerHorizontal="true"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+
 </RelativeLayout>

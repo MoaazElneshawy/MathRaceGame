@@ -2,12 +2,17 @@ package com.mathrace.mathrace.UI;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -20,6 +25,7 @@ import com.mathrace.mathrace.R;
 import com.mathrace.mathrace.Utilities.BaseActivity;
 import com.mathrace.mathrace.Utilities.SharedPrefUtilities;
 
+import java.security.MessageDigest;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -27,7 +33,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SplashActivity extends BaseActivity {
-
 
 
     SharedPrefUtilities sharedPrefUtilities;
@@ -59,11 +64,13 @@ public class SplashActivity extends BaseActivity {
             languageConfiguration(language);
         }
 
+//        getSHAKey();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 startActivity(new Intent(SplashActivity.this, StartActivity.class));
-                overridePendingTransition(R.anim.slide_out , R.anim.slide_in);
+                overridePendingTransition(R.anim.slide_out, R.anim.slide_in);
 
             }
         }, 3000);
@@ -96,4 +103,19 @@ public class SplashActivity extends BaseActivity {
         sharedPrefUtilities.setLanguage(language);
     }
 
+    void getSHAKey() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.mathrace.mathrace",PackageManager.GET_SIGNATURES);
+            for (Signature s : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(s.toByteArray());
+                Log.e("keyHash",Base64.encodeToString(md.digest(),Base64.DEFAULT));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("keyHash"," -e --  "+e.getMessage());
+
+        }
+    }
 }
