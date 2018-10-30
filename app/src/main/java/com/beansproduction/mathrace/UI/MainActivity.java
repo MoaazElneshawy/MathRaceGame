@@ -1,4 +1,4 @@
-package com.mathrace.mathrace.UI;
+package com.beansproduction.mathrace.UI;
 
 import android.animation.Animator;
 import android.app.Dialog;
@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareContent;
 import com.facebook.share.model.ShareHashtag;
@@ -42,8 +43,8 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
-import com.mathrace.mathrace.Models.TaskModel;
-import com.mathrace.mathrace.R;
+import com.beansproduction.mathrace.Models.TaskModel;
+import com.beansproduction.mathrace.R;
 
 import java.util.List;
 import java.util.Locale;
@@ -52,9 +53,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import com.mathrace.mathrace.Utilities.BaseActivity;
-import com.mathrace.mathrace.Utilities.MathRaceQuestionsGenerator;
-import com.mathrace.mathrace.Utilities.SharedPrefUtilities;
+import com.beansproduction.mathrace.Utilities.BaseActivity;
+import com.beansproduction.mathrace.Utilities.MathRaceQuestionsGenerator;
+import com.beansproduction.mathrace.Utilities.SharedPrefUtilities;
 
 public class MainActivity extends BaseActivity implements RewardedVideoAdListener {
 
@@ -80,8 +81,6 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     LinearLayout layoutQuiz;
     @BindView(R.id.main_game_over_layout)
     LinearLayout layoutGameOver;
-    //    @BindView(R.id.main_btn_start)
-//    Button btnStart;
     @BindView(R.id.main_game_over_btn_watch_video)
     Button btnWatchVideo;
     @BindView(R.id.main_game_over_btn_to_quiz)
@@ -102,7 +101,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     CallbackManager callbackManager;
     ShareDialog shareDialog;
     CountDownTimer mCountDownTimer;
-    long mainCounter = 10000, currentCounter = 0, pauseCounter = 0, mLastClickTime = 0;
+    long mainCounter = 15500, currentCounter = 0, pauseCounter = 0, mLastClickTime = 0;
     int current_level = 1, questions_score = 0, watched_video_count = 0, played_quiz_count = 0, score = 0, bg_audio_position = 0;
     public static final int REQUEST_CODE = 10;
     Dialog mDialogSettings, mDialogBack;
@@ -148,24 +147,22 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         Intent i = this.getIntent();
         if (i != null && i.hasExtra("audio_position")) {
             bg_audio_position = i.getIntExtra("audio_position", 0);
-            if (bg_audio_position != 0) {
-                mBackground.seekTo(bg_audio_position);
-            }
+
         }
-        if (sharedPrefUtilities.getBgAudio()) {
-            mBackground.start();
-        }
+
         if (i.hasExtra("score")) {
             int saved_score = i.getIntExtra("score", 0);
             long time = i.getLongExtra("time", 0l);
             int saved_level = i.getIntExtra("level", 0);
-            Log.e("FQ " + TAG, "intent " + saved_score + " - " + time + " " + saved_level);
+            bg_audio_position = i.getIntExtra("audio_position", 0);
+            Log.e("FQ in Main " + TAG, "intent " + saved_score + " - " + time + " " + saved_level);
             if (time > 0) {
-                savedDoIn(time);
+                doIn(time);
                 score = saved_score;
                 current_level = saved_level;
                 layoutQuiz.setVisibility(View.VISIBLE);
                 getNewQuestion(saved_level);
+                Toast.makeText(this, getString(R.string.quiz_sucess), Toast.LENGTH_LONG).show();
             } else {
                 layoutQuiz.setVisibility(View.GONE);
                 layoutGameOver.setVisibility(View.VISIBLE);
@@ -179,6 +176,13 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         }
         setAdmob();
 
+        if (bg_audio_position != 0) {
+            mBackground.seekTo(bg_audio_position);
+        }
+
+        if (sharedPrefUtilities.getBgAudio()) {
+            mBackground.start();
+        }
 
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
@@ -204,10 +208,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                 tvScore.setText(getResources().getString(R.string.score) + " : " + score +
                         "\n" + getResources().getString(R.string.level) + "  : " + current_level);
                 currentCounter = millisUntilFinished;
-                btnAnswer1.setEnabled(true);
-                btnAnswer2.setEnabled(true);
-                btnAnswer3.setEnabled(true);
-                btnAnswer4.setEnabled(true);
+
                 tvTimer.setText("" + millisUntilFinished / 1000);
                 tvScore.setVisibility(View.VISIBLE);
                 gameFinished = false;
@@ -219,10 +220,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                 tvScore.setText(getResources().getString(R.string.score) + " : " + score +
                         "\n" + getResources().getString(R.string.level) + " : " + current_level);
                 tvScore.setVisibility(View.GONE);
-                btnAnswer1.setEnabled(false);
-                btnAnswer2.setEnabled(false);
-                btnAnswer3.setEnabled(false);
-                btnAnswer4.setEnabled(false);
+
 //                ivSettings.setVisibility(View.VISIBLE);
                 currentCounter = 0l;
 
@@ -255,72 +253,66 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     }
 
-    void savedDoIn(final long time) {
-
-        if (mCountDownTimer != null) {
-            mCountDownTimer.cancel();
-        }
-
-        mCountDownTimer = new CountDownTimer(time, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
-                        "\n" + getResources().getString(R.string.level) + "  : " + current_level);
-                currentCounter = millisUntilFinished;
-                btnAnswer1.setEnabled(true);
-                btnAnswer2.setEnabled(true);
-                btnAnswer3.setEnabled(true);
-                btnAnswer4.setEnabled(true);
-                tvTimer.setText("" + millisUntilFinished / 1000);
-                gameFinished = false;
-                tvScore.setVisibility(View.VISIBLE);
-            }
-
-            public void onFinish() {
-                int s = getHighScore(score);
-                tvTimer.setText("0");
-                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
-                        "\n" + getResources().getString(R.string.level) + " : " + current_level);
-                tvScore.setVisibility(View.GONE);
-                currentCounter = 0l;
-                btnAnswer1.setEnabled(false);
-                btnAnswer2.setEnabled(false);
-                btnAnswer3.setEnabled(false);
-                btnAnswer4.setEnabled(false);
-                gameFinished = true;
-                if (isNewHighScore) {
-                    ivPlayerStatus.setImageResource(R.drawable.ic_winner);
-                    tvGameOverScore.setText(getResources().getString(R.string.new_high_score) + " ( " + score + " )");
-                } else {
-                    ivPlayerStatus.setImageResource(R.drawable.ic_loser);
-                    tvGameOverScore.setText(getResources().getString(R.string.game_over_score) + " ( " + score + " ) \n"
-                            + getResources().getString(R.string.last_high_score) + " ( " + s + " )");
-                }
-
-                if ((!rewardedVideoAd.isLoaded()) || (sharedPrefUtilities.getWatchedVideo() == 3)) {
-                    btnWatchVideo.setVisibility(View.GONE);
-                    tvVideoHint.setVisibility(View.GONE);
-                } else {
-                    btnWatchVideo.setVisibility(View.VISIBLE);
-                    tvVideoHint.setVisibility(View.VISIBLE);
-                }
-                if (sharedPrefUtilities.getPlayedQuiz() == 5) {
-                    btnPlayQuiz.setVisibility(View.GONE);
-                    tvQuizHint.setVisibility(View.GONE);
-                }
-                if (time == 0) {
-                    btnWatchVideo.setVisibility(View.GONE);
-                    tvVideoHint.setVisibility(View.GONE);
-                    btnPlayQuiz.setVisibility(View.GONE);
-                    tvQuizHint.setVisibility(View.GONE);
-                }
-
-                performAnimation(layoutQuiz, layoutGameOver);
-            }
-        }.start();
-
-
-    }
+//    void savedDoIn(final long time) {
+//
+//        if (mCountDownTimer != null) {
+//            mCountDownTimer.cancel();
+//        }
+//
+//        mCountDownTimer = new CountDownTimer(time, 1000) {
+//
+//            public void onTick(long millisUntilFinished) {
+//                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
+//                        "\n" + getResources().getString(R.string.level) + "  : " + current_level);
+//                currentCounter = millisUntilFinished;
+//
+//                tvTimer.setText("" + millisUntilFinished / 1000);
+//                gameFinished = false;
+//                tvScore.setVisibility(View.VISIBLE);
+//            }
+//
+//            public void onFinish() {
+//                int s = getHighScore(score);
+//                tvTimer.setText("0");
+//                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
+//                        "\n" + getResources().getString(R.string.level) + " : " + current_level);
+//                tvScore.setVisibility(View.GONE);
+//                currentCounter = 0l;
+//
+//                gameFinished = true;
+//                if (isNewHighScore) {
+//                    ivPlayerStatus.setImageResource(R.drawable.ic_winner);
+//                    tvGameOverScore.setText(getResources().getString(R.string.new_high_score) + " ( " + score + " )");
+//                } else {
+//                    ivPlayerStatus.setImageResource(R.drawable.ic_loser);
+//                    tvGameOverScore.setText(getResources().getString(R.string.game_over_score) + " ( " + score + " ) \n"
+//                            + getResources().getString(R.string.last_high_score) + " ( " + s + " )");
+//                }
+//
+//                if ((!rewardedVideoAd.isLoaded()) || (sharedPrefUtilities.getWatchedVideo() == 3)) {
+//                    btnWatchVideo.setVisibility(View.GONE);
+//                    tvVideoHint.setVisibility(View.GONE);
+//                } else {
+//                    btnWatchVideo.setVisibility(View.VISIBLE);
+//                    tvVideoHint.setVisibility(View.VISIBLE);
+//                }
+//                if (sharedPrefUtilities.getPlayedQuiz() == 5) {
+//                    btnPlayQuiz.setVisibility(View.GONE);
+//                    tvQuizHint.setVisibility(View.GONE);
+//                }
+//                if (time == 0) {
+//                    btnWatchVideo.setVisibility(View.GONE);
+//                    tvVideoHint.setVisibility(View.GONE);
+//                    btnPlayQuiz.setVisibility(View.GONE);
+//                    tvQuizHint.setVisibility(View.GONE);
+//                }
+//
+//                performAnimation(layoutQuiz, layoutGameOver);
+//            }
+//        }.start();
+//
+//
+//    }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -408,6 +400,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     @OnClick(R.id.main_game_over_btn_start_again)
     void startAgain() {
         if (sound) mClick.start();
+        if (bg_sound && !mBackground.isPlaying()) mBackground.start();
         doIn(mainCounter);
         current_level = 1;
         score = 0;
@@ -430,8 +423,9 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     public void onResume() {
         super.onResume();
         rewardedVideoAd.resume(this);
-        if (bg_sound)
+        if (bg_sound && !mBackground.isPlaying())
             mBackground.start();
+
         if (gamePaused) resumeGame();
         if (!gameFinished) resumeGame();
 
@@ -476,14 +470,17 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     }
 
     private void interstitialAdPrize() {
-        Intent intent = new Intent(MainActivity.this, FastQuizActivity.class);
+        Intent intent = new Intent(MainActivity.this, QuizActivity.class);
         intent.putExtra("score", score);
         intent.putExtra("level", current_level);
+        intent.putExtra("audio_position", mBackground.getCurrentPosition());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Log.e("FQ " + TAG, "prize " + score + " " + current_level);
         played_quiz_count++;
         sharedPrefUtilities.setPlayedQuiz(played_quiz_count);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_out, R.anim.slide_in);
+
     }
 
     private void setDialogSettings() {
@@ -848,7 +845,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             sharedPrefUtilities.setHighScore(newScore);
             return newScore;
         } else {
-            sharedPrefUtilities.setHighScore(score);
+            sharedPrefUtilities.setHighScore(saved);
             isNewHighScore = false;
             return saved;
         }
@@ -873,14 +870,18 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     void pauseGame() {
         pauseCounter = currentCounter;
         Log.e(TAG, "time pause  > " + pauseCounter + " - " + currentCounter);
-        mCountDownTimer.cancel();
+        try {
+            mCountDownTimer.cancel();
+        } catch (Exception e) {
 
+        }
         layoutQuiz.setVisibility(View.GONE);
         tvTimer.setVisibility(View.GONE);
     }
 
     private void resumeGame() {
         if (sound) mClick.start();
+
         Log.e(TAG, "time resume  > " + pauseCounter + " - " + currentCounter);
         layoutQuiz.setVisibility(View.VISIBLE);
         tvTimer.setVisibility(View.VISIBLE);

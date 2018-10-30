@@ -1,4 +1,4 @@
-package com.mathrace.mathrace.UI;
+package com.beansproduction.mathrace.UI;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -20,9 +20,9 @@ import android.widget.RadioButton;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.mathrace.mathrace.R;
-import com.mathrace.mathrace.Utilities.BaseActivity;
-import com.mathrace.mathrace.Utilities.SharedPrefUtilities;
+import com.beansproduction.mathrace.R;
+import com.beansproduction.mathrace.Utilities.BaseActivity;
+import com.beansproduction.mathrace.Utilities.SharedPrefUtilities;
 
 import java.util.Locale;
 

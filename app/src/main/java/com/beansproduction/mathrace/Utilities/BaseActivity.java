@@ -1,10 +1,10 @@
-package com.mathrace.mathrace.Utilities;
+package com.beansproduction.mathrace.Utilities;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.mathrace.mathrace.R;
+import com.beansproduction.mathrace.R;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;

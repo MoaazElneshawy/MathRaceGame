@@ -20,10 +20,11 @@
             android:orientation="vertical">
 
             <TextView
-
+                android:id="@+id/dialog_quiz_tv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:gravity="center_horizontal"
+                android:scrollbars="vertical"
                 android:text="@string/quiz_hint"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="20sp"

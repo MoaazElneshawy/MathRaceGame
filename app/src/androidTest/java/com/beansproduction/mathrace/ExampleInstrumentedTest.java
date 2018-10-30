@@ -1,4 +1,4 @@
-package com.mathrace.mathrace;
+package com.beansproduction.mathrace;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

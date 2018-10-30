@@ -1,4 +1,4 @@
-package com.mathrace.mathrace.Models;
+package com.beansproduction.mathrace.Models;
 
 public class TaskModel {
     private String question;

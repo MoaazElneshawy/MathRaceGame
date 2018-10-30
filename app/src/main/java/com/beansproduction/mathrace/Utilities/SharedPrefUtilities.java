@@ -1,4 +1,4 @@
-package com.mathrace.mathrace.Utilities;
+package com.beansproduction.mathrace.Utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;

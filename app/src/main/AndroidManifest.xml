@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mathrace.mathrace">
+    package="com.beansproduction.mathrace">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -29,23 +29,19 @@
             android:noHistory="true"
             android:screenOrientation="portrait" />
 
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
         <provider
             android:name="com.facebook.FacebookContentProvider"
-            android:authorities="com.facebook.app.FacebookContentProvider183684852536217"
+            android:authorities="com.facebook.app.FacebookContentProvider575333792924726"
             android:exported="true" />
 
-        <!--<provider android:authorities="com.facebook.app.FacebookContentProvider1234"-->
-            <!--android:name="com.facebook.FacebookContentProvider"-->
-            <!--android:exported="true" />-->
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-             android:value="@string/facebook_app_id"/>
-
-        <activity
-            android:name=".UI.AboutActivity"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".UI.StartActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".UI.QuizActivity"></activity>
     </application>
 
 </manifest>

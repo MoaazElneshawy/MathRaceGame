@@ -48,7 +48,9 @@
         مالك الفكرة : عمرو مجدي\n
         المطور : معاذ النشاوي
     </string>
-    <string name="facebook_app_id">183684852536217</string>
-    <string name="facebook_protool_schema">fb183684852536217</string>
+    <string name="facebook_app_id">575333792924726</string>
+    <string name="facebook_protool_schema">fb575333792924726</string>
+    <string name="facebook_provider">com.facebook.app.FacebookContentProvider575333792924726</string>
+    <string name="quiz_back">لا يمكنك العودة حتى انتهاء العشرون ثانية</string>
 
 </resources>

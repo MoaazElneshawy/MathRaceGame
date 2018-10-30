@@ -1,13 +1,11 @@
-package com.mathrace.mathrace.UI;
+package com.beansproduction.mathrace.UI;
 
-import android.animation.Animator;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,22 +13,15 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import com.mathrace.mathrace.R;
-import com.mathrace.mathrace.Utilities.BaseActivity;
-import com.mathrace.mathrace.Utilities.SharedPrefUtilities;
+import com.beansproduction.mathrace.R;
+import com.beansproduction.mathrace.Utilities.BaseActivity;
+import com.beansproduction.mathrace.Utilities.SharedPrefUtilities;
 
 import java.security.MessageDigest;
 import java.util.Locale;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class SplashActivity extends BaseActivity {
 
@@ -105,7 +96,7 @@ public class SplashActivity extends BaseActivity {
 
     void getSHAKey() {
         try {
-            PackageInfo info = getPackageManager().getPackageInfo("com.mathrace.mathrace",PackageManager.GET_SIGNATURES);
+            PackageInfo info = getPackageManager().getPackageInfo("com.beansproduction.mathrace",PackageManager.GET_SIGNATURES);
             for (Signature s : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(s.toByteArray());

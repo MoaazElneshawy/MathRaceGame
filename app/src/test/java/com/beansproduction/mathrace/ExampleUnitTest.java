@@ -1,4 +1,4 @@
-package com.mathrace.mathrace;
+package com.beansproduction.mathrace;
 
 import org.junit.Test;
 

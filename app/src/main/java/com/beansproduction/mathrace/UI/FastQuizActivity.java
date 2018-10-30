@@ -1,4 +1,4 @@
-package com.mathrace.mathrace.UI;
+package com.beansproduction.mathrace.UI;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,11 +22,11 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.mathrace.mathrace.Models.TaskModel;
-import com.mathrace.mathrace.R;
-import com.mathrace.mathrace.Utilities.BaseActivity;
-import com.mathrace.mathrace.Utilities.MathRaceQuestionsGenerator;
-import com.mathrace.mathrace.Utilities.SharedPrefUtilities;
+import com.beansproduction.mathrace.Models.TaskModel;
+import com.beansproduction.mathrace.R;
+import com.beansproduction.mathrace.Utilities.BaseActivity;
+import com.beansproduction.mathrace.Utilities.MathRaceQuestionsGenerator;
+import com.beansproduction.mathrace.Utilities.SharedPrefUtilities;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class FastQuizActivity extends BaseActivity {
     String TAG = "FastQuizActivity";
     TaskModel model;
     boolean isCorrect, pause = false, sound, bg_sound;
-    int score = 0, current_level = 1, number_of_questions = 1, saved_score, saved_level;
+    int score = 0, current_level = 1, number_of_questions = 1, saved_score, saved_level, audio_position = 0;
     CountDownTimer mCountDownTimer;
     long fast_quizCounter = 20800, currentCounter = 0, mLastClickTime = 0, pauseCounter = 0;
     SharedPrefUtilities sharedPrefUtilities;
@@ -66,6 +67,7 @@ public class FastQuizActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.slide_in , R.anim.slide_out);
         setContentView(R.layout.activity_fast_quiz);
         ButterKnife.bind(this);
         try {
@@ -78,6 +80,7 @@ public class FastQuizActivity extends BaseActivity {
         if (i != null) {
             saved_score = i.getIntExtra("score", 10);
             saved_level = i.getIntExtra("level", 2);
+            audio_position = i.getIntExtra("audio_position", 0);
         }
         Log.e("FQ " + TAG, "OnCreate " + saved_score + " - " + saved_level);
         sharedPrefUtilities = new SharedPrefUtilities(this);
@@ -86,13 +89,16 @@ public class FastQuizActivity extends BaseActivity {
         mBackground.setLooping(true);
         bg_sound = sharedPrefUtilities.getBgAudio();
         sound = sharedPrefUtilities.getAUDIO();
+        if (audio_position != 0) {
+            mBackground.seekTo(audio_position);
+        }
         setQuizDialog();
         getNewQuestion(current_level);
         if (sharedPrefUtilities.getQuizHint()) {
             mQuizDialog.show();
             Log.e("FQ " + TAG, " - dialogShow");
         } else {
-            doIn(fast_quizCounter);
+//            doIn(fast_quizCounter);
             Log.e("FQ " + TAG, " - start 3 6ol");
         }
     }
@@ -109,6 +115,8 @@ public class FastQuizActivity extends BaseActivity {
         mQuizDialog.setCancelable(false);
         final CheckBox cbDontShow = mQuizDialog.findViewById(R.id.dialog_quiz_cb);
         Button btnSave = mQuizDialog.findViewById(R.id.dialog_quiz_btn_save);
+        TextView tvHint = mQuizDialog.findViewById(R.id.dialog_quiz_tv);
+        tvHint.setMovementMethod(new ScrollingMovementMethod());
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,7 +124,7 @@ public class FastQuizActivity extends BaseActivity {
                     sharedPrefUtilities.setQuizHint(false);
                 }
                 mQuizDialog.dismiss();
-                doIn(fast_quizCounter);
+//                doIn(fast_quizCounter);
             }
         });
     }
@@ -131,12 +139,7 @@ public class FastQuizActivity extends BaseActivity {
                 tvScore.setText(getResources().getString(R.string.score) + " : " + score +
                         "\n" + getResources().getString(R.string.level) + "  : " + current_level);
                 currentCounter = millisUntilFinished;
-                btnAnswer1.setEnabled(true);
-                btnAnswer2.setEnabled(true);
-                btnAnswer3.setEnabled(true);
-                btnAnswer4.setEnabled(true);
                 tvTimer.setText("" + millisUntilFinished / 1000);
-//                ivSettings.setVisibility(View.INVISIBLE);
             }
 
             public void onFinish() {
@@ -144,19 +147,16 @@ public class FastQuizActivity extends BaseActivity {
                 tvScore.setText(getResources().getString(R.string.score) + " : " + score +
                         "\n" + getResources().getString(R.string.level) + " : " + current_level);
 
-                btnAnswer1.setEnabled(false);
-                btnAnswer2.setEnabled(false);
-                btnAnswer3.setEnabled(false);
-                btnAnswer4.setEnabled(false);
                 Intent back = new Intent(FastQuizActivity.this, MainActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         .putExtra("score", saved_score)
+                        .putExtra("audio_position", mBackground.getCurrentPosition())
                         .putExtra("time", score * 1000l)
                         .putExtra("level", saved_level);
                 Log.e("FQ " + TAG, saved_score + " - " + score + " - " + saved_level);
-                Toast.makeText(FastQuizActivity.this, getString(R.string.quiz_sucess), Toast.LENGTH_LONG).show();
-                startActivity(back);
-                finish();
+//                Toast.makeText(FastQuizActivity.this, getString(R.string.quiz_sucess), Toast.LENGTH_LONG).show();
+//                startActivity(back);
+//                finish();
 
             }
 
@@ -196,10 +196,6 @@ public class FastQuizActivity extends BaseActivity {
 
     private void checkAnswers(String value1, String value2, String value3, String value4,
                               TaskModel model, final int current_level, Button selected, String selected_value) {
-        btnAnswer1.setEnabled(false);
-        btnAnswer2.setEnabled(false);
-        btnAnswer3.setEnabled(false);
-        btnAnswer4.setEnabled(false);
         Log.e(TAG, selected_value + " - " + model.getCorrect_answer());
         if (selected_value.equals(model.getCorrect_answer())) {
             selected.setBackground(getResources().getDrawable(R.drawable.correct_answer_background));
@@ -233,10 +229,7 @@ public class FastQuizActivity extends BaseActivity {
     }
 
     private void getNewQuestion(int current_level) {
-        btnAnswer1.setEnabled(true);
-        btnAnswer2.setEnabled(true);
-        btnAnswer3.setEnabled(true);
-        btnAnswer4.setEnabled(true);
+
         btnAnswer1.setBackground(getResources().getDrawable(R.drawable.answers_background));
         btnAnswer2.setBackground(getResources().getDrawable(R.drawable.answers_background));
         btnAnswer3.setBackground(getResources().getDrawable(R.drawable.answers_background));
@@ -287,45 +280,46 @@ public class FastQuizActivity extends BaseActivity {
         mAdView.loadAd(adRequest);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (bg_sound)
-            mBackground.pause();
-        pauseGame();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (bg_sound) {
-            mBackground.start();
-        }
-        if (pause) resumeGame();
-        pause = false;
-    }
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        pause = true;
+//        pauseGame();
+//        if (bg_sound)
+//            mBackground.pause();
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if (bg_sound && !mBackground.isPlaying()) {
+//            mBackground.start();
+//        }
+//        if (pause) resumeGame();
+//        pause = false;
+//    }
 
     void pauseGame() {
         pauseCounter = currentCounter;
-        Log.e(TAG, "time pause  > " + pauseCounter + " - " + currentCounter);
+        Log.e(TAG, "time pause  > " + pauseCounter + " - " + currentCounter + " - pa  "+pause);
         mCountDownTimer.cancel();
-        pause = true;
         layoutQuiz.setVisibility(View.GONE);
         tvTimer.setVisibility(View.GONE);
     }
 
     private void resumeGame() {
         if (sound) mClick.start();
-        Log.e(TAG, "time resume  > " + pauseCounter + " - " + currentCounter);
+        Log.e(TAG, "time resume  > " + pauseCounter + " - " + currentCounter+ " - pa  "+pause);
         layoutQuiz.setVisibility(View.VISIBLE);
         tvTimer.setVisibility(View.VISIBLE);
         getNewQuestion(current_level);
-        doIn(pauseCounter);
+//        if (pauseCounter != 0)
+//            doIn(pauseCounter);
 
     }
 
     @Override
     public void onBackPressed() {
-
+        Toast.makeText(this, getString(R.string.quiz_back), Toast.LENGTH_SHORT).show();
     }
 }
