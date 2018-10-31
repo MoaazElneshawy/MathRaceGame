@@ -28,6 +28,7 @@ import com.beansproduction.mathrace.Utilities.SharedPrefUtilities;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.List;
 
@@ -84,6 +85,9 @@ public class QuizActivity extends BaseActivity {
             saved_level = i.getIntExtra("level", 2);
             audio_position = i.getIntExtra("audio_position", 0);
         }
+
+        MobileAds.initialize(this, getString(R.string.ads_app_id));
+
         setAdmob();
         sharedPrefUtilities = new SharedPrefUtilities(this);
         bg_sound = sharedPrefUtilities.getBgAudio();
@@ -96,7 +100,8 @@ public class QuizActivity extends BaseActivity {
         if (audio_position != 0) {
             mBackground.seekTo(audio_position);
         }
-        mBackground.start();
+        if (bg_sound)
+            mBackground.start();
 
         setQuizDialog();
         if (show_hint)
@@ -104,6 +109,7 @@ public class QuizActivity extends BaseActivity {
         else doIn(quizCounter);
 
         getNewQuestion(current_level);
+
     }
 
 
@@ -111,7 +117,7 @@ public class QuizActivity extends BaseActivity {
         // Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.SMART_BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        adView.setAdUnitId(getString(R.string.banner_id));
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);

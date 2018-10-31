@@ -2,6 +2,7 @@
     <string name="app_name">Math Race</string>
     <string name="timer">Timer</string>
     <string name="score">Score</string>
+    <string name="share_text">on Math-Race , Can you beat me ?</string>
     <string name="level">Level</string>
     <string name="on">On</string>
     <string name="off">Off</string>
@@ -50,5 +51,13 @@
     <string name="facebook_protool_schema">fb575333792924726</string>
     <string name="facebook_provider">com.facebook.app.FacebookContentProvider183684852536217</string>
     <string name="quiz_back">You can\'t go back until the 20s finished</string>
+
+    <string name="internet_connection_error">No Internet Connection</string>
+
+    ///// ads ids
+    <string name="banner_id">ca-app-pub-1466874792315947/2269505814</string>
+    <string name="interstitial_id">ca-app-pub-1466874792315947/4241063033</string>
+    <string name="rewarded_id">ca-app-pub-1466874792315947/7940634895</string>
+    <string name="ads_app_id">ca-app-pub-1466874792315947~9465469551</string>
 
 </resources>

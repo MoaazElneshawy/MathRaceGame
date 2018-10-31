@@ -2,18 +2,22 @@ package com.beansproduction.mathrace.UI;
 
 import android.animation.Animator;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -113,7 +117,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     AdRequest adRequest;
     TaskModel model;
     public static final String TAG = "MainActivity";
-    boolean isCorrect, sound, bg_sound, isNewHighScore, gameFinished = true, gamePaused = false, pauseByVideo = false;
+    boolean isCorrect, sound, bg_sound, isNewHighScore, gameFinished = true, gamePaused = false, pauseByVideo = false, hasNetwork;
     SharedPrefUtilities sharedPrefUtilities;
     String language;
 
@@ -131,7 +135,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         callbackManager = CallbackManager.Factory.create();
         settingFB();
 
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        MobileAds.initialize(this, getString(R.string.ads_app_id));
         sharedPrefUtilities = new SharedPrefUtilities(this);
 //        onChangeSoundListener = (OnChangeSoundListener) getApplicationContext();
         sound = sharedPrefUtilities.getAUDIO();
@@ -185,7 +189,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         }
 
         interstitialAd = new InterstitialAd(this);
-        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_id));
         adRequest = new AdRequest.Builder().build();
         interstitialAd.loadAd(adRequest);
 
@@ -344,22 +348,26 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     @OnClick(R.id.main_game_over_btn_share_on_fb)
     void shareOnFB() {
+        if (hasNetwork) {
+            if (ShareDialog.canShow(ShareLinkContent.class)) {
 
-        if (ShareDialog.canShow(ShareLinkContent.class)) {
+                ShareContent content = new ShareLinkContent.Builder()
 
-            ShareContent content = new ShareLinkContent.Builder()
+                        .setQuote((getString(R.string.score) + " " + score + " " + getString(R.string.share_text)))
+                        .setContentUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.beansproduction.mathrace"))
 
-                    .setQuote((getString(R.string.score) + " " + score + " played on " + "Math-Race"))
-                    .setContentUrl(Uri.parse("https://www.google.com"))
+                        .setShareHashtag(new ShareHashtag.Builder()
+                                .setHashtag("#MathRace")
+                                .build())
 
-                    .setShareHashtag(new ShareHashtag.Builder()
-                            .setHashtag("#MathRace")
-                            .build())
+                        .build();
 
-                    .build();
+                shareDialog.show(content);
 
-            shareDialog.show(content);
-
+            }
+        } else {
+            Toast.makeText(this, getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+            isNetworkAvailable();
         }
     }
 
@@ -422,6 +430,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     @Override
     public void onResume() {
         super.onResume();
+        isNetworkAvailable();
         rewardedVideoAd.resume(this);
         if (bg_sound && !mBackground.isPlaying())
             mBackground.start();
@@ -613,7 +622,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         // Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713
         AdView adView = new AdView(this);
         adView.setAdSize(AdSize.SMART_BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+        adView.setAdUnitId(getString(R.string.banner_id));
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -677,6 +686,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             currentCounter += 2000;
             doIn(currentCounter);
         }
+        startNewLevel();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -708,7 +718,6 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         btnAnswer3.setText(model.getAnswer3());
         btnAnswer4.setText(model.getAnswer4());
         setModel(model);
-        startNewLevel();
 
     }
 
@@ -743,7 +752,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     private void loadRewardedVideoAd() {
         if (!rewardedVideoAd.isLoaded()) {
-            rewardedVideoAd.loadAd(AD_UNIT_ID, new AdRequest.Builder().build());
+            rewardedVideoAd.loadAd(getString(R.string.rewarded_id), new AdRequest.Builder().build());
         }
     }
 
@@ -866,6 +875,12 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         }
     }
 
+    @Override
+    public void onDestroy() {
+        rewardedVideoAd.destroy(this);
+        super.onDestroy();
+    }
+
 
     void pauseGame() {
         pauseCounter = currentCounter;
@@ -891,6 +906,19 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     }
 
+
+    private void isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting()) {
+            //  connected
+            hasNetwork = true;
+        } else {
+            // code if not connected
+            hasNetwork = false;
+        }
+    }
 
 }
 

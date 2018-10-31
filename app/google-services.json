@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "737136790182",
+    "firebase_url": "https://math-race.firebaseio.com",
+    "project_id": "math-race",
+    "storage_bucket": "math-race.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737136790182:android:c83be58ec41ea4de",
+        "android_client_info": {
+          "package_name": "com.beansproduction.mathrace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "737136790182-5ar2trbk793mkmb7fg6qelruds1c9eo1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beansproduction.mathrace",
+            "certificate_hash": "bdaaec5799d304b08e35b86d3f02249cd5bdec3b"
+          }
+        },
+        {
+          "client_id": "737136790182-a9pv22ktqe9o230so2u3878snt3lfm5s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6kDdPGR5JNL52rdCQZLDZDszqFYeIiHc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "737136790182-a9pv22ktqe9o230so2u3878snt3lfm5s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      },
+      "admob_app_id": "ca-app-pub-1466874792315947~9465469551"
+    }
+  ],
+  "configuration_version": "1"
+}

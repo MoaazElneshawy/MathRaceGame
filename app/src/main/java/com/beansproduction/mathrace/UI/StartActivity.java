@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -19,10 +21,13 @@ import android.widget.RadioButton;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.beansproduction.mathrace.R;
 import com.beansproduction.mathrace.Utilities.BaseActivity;
 import com.beansproduction.mathrace.Utilities.SharedPrefUtilities;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.Locale;
 
@@ -46,6 +51,7 @@ public class StartActivity extends BaseActivity {
     SharedPrefUtilities sharedPrefUtilities;
     int bg_audio_position = 0;
     String language;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,8 @@ public class StartActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        MobileAds.initialize(this, getString(R.string.ads_app_id));
+        setAdmob();
         sharedPrefUtilities = new SharedPrefUtilities(this);
         mClick = MediaPlayer.create(StartActivity.this, R.raw.button_click);
         mBackground = MediaPlayer.create(this, R.raw.background_audio);
@@ -66,7 +74,7 @@ public class StartActivity extends BaseActivity {
         sharedPrefUtilities.setWatchedVideo(0);
         sharedPrefUtilities.setPlayedQuiz(0);
         interstitialAd = new InterstitialAd(this);
-        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_id));
         adRequest = new AdRequest.Builder().build();
         interstitialAd.loadAd(adRequest);
         Intent i = this.getIntent();
@@ -79,6 +87,16 @@ public class StartActivity extends BaseActivity {
         if (sharedPrefUtilities.getBgAudio()) {
             mBackground.start();
         }
+    }
+
+    private void setAdmob() {
+        // Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713
+        AdView adView = new AdView(this);
+        adView.setAdSize(AdSize.SMART_BANNER);
+        adView.setAdUnitId(getString(R.string.banner_id));
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override
@@ -96,6 +114,7 @@ public class StartActivity extends BaseActivity {
         Log.e(TAG, "OnResume");
         if (sharedPrefUtilities.getBgAudio() && !mBackground.isPlaying())
             mBackground.start();
+
     }
 
     private void setDialogSettings() {
