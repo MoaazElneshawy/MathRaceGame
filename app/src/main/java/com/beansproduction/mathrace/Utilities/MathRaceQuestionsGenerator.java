@@ -35,6 +35,7 @@ public class MathRaceQuestionsGenerator {
     //level are 0 based
     public static ArrayList<String> getQuestion(int level)
     {
+		level-=1;
         //set level
         if(level>9)
         {
@@ -122,6 +123,7 @@ public class MathRaceQuestionsGenerator {
     
     public static ArrayList<String> getQuizQuestion(int level)
     {
+		level-=1;
         //set level
         if(level>9)
         {
