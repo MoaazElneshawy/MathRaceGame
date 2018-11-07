@@ -159,7 +159,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             long time = i.getLongExtra("time", 0l);
             int saved_level = i.getIntExtra("level", 0);
             bg_audio_position = i.getIntExtra("audio_position", 0);
-            Log.e("FQ in Main " + TAG, "intent " + saved_score + " - " + time + " " + saved_level);
+            // Log.e("FQ in Main " + TAG, "intent " + saved_score + " - " + time + " " + saved_level);
             if (time > 0) {
                 doIn(time);
                 score = saved_score;
@@ -340,7 +340,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
             @Override
             public void onError(FacebookException e) {
-                Log.e(TAG, e.getMessage());
+                // Log.e(TAG, e.getMessage());
             }
         });
 
@@ -484,7 +484,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         intent.putExtra("level", current_level);
         intent.putExtra("audio_position", mBackground.getCurrentPosition());
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        Log.e("FQ " + TAG, "prize " + score + " " + current_level);
+        // Log.e("FQ " + TAG, "prize " + score + " " + current_level);
         played_quiz_count++;
         sharedPrefUtilities.setPlayedQuiz(played_quiz_count);
         startActivity(intent);
@@ -758,31 +758,31 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     @Override
     public void onRewardedVideoAdLoaded() {
-        Log.e(TAG, "onRewardedVideoAdLoaded");
+//        // Log.e(TAG, "onRewardedVideoAdLoaded");
 
     }
 
     @Override
     public void onRewardedVideoAdOpened() {
-        Log.e(TAG, "onRewardedVideoAdOpened");
+//        // Log.e(TAG, "onRewardedVideoAdOpened");
         watched_video_count++;
         sharedPrefUtilities.setWatchedVideo(watched_video_count);
         loadRewardedVideoAd();
         pauseByVideo = true;
         if (sharedPrefUtilities.getBgAudio()) {
-            Log.e(TAG, "music is on");
+            // Log.e(TAG, "music is on");
             mBackground.pause();
         }
     }
 
     @Override
     public void onRewardedVideoStarted() {
-        Log.e(TAG, "onRewardedVideoStarted");
+        // Log.e(TAG, "onRewardedVideoStarted");
     }
 
     @Override
     public void onRewardedVideoAdClosed() {
-        Log.e(TAG, "onRewardedVideoAdClosed");
+        // Log.e(TAG, "onRewardedVideoAdClosed");
         loadRewardedVideoAd();
         if (rewardItem != null) {
 //            currentCounter = 5800;
@@ -801,25 +801,25 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     @Override
     public void onRewarded(RewardItem rewardItem) {
-        Log.e(TAG, "onRewarded");
+        // Log.e(TAG, "onRewarded");
         this.rewardItem = rewardItem;
 
     }
 
     @Override
     public void onRewardedVideoAdLeftApplication() {
-        Log.e(TAG, "onRewardedVideoAdLeftApplication");
+        // Log.e(TAG, "onRewardedVideoAdLeftApplication");
         loadRewardedVideoAd();
     }
 
     @Override
     public void onRewardedVideoAdFailedToLoad(int i) {
-        Log.e(TAG, "onRewardedVideoAdFailedToLoad");
+        // Log.e(TAG, "onRewardedVideoAdFailedToLoad");
     }
 
     @Override
     public void onRewardedVideoCompleted() {
-        Log.e(TAG, "onRewardedVideoCompleted");
+        // Log.e(TAG, "onRewardedVideoCompleted");
         loadRewardedVideoAd();
     }
 
@@ -884,7 +884,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     void pauseGame() {
         pauseCounter = currentCounter;
-        Log.e(TAG, "time pause  > " + pauseCounter + " - " + currentCounter);
+        // Log.e(TAG, "time pause  > " + pauseCounter + " - " + currentCounter);
         try {
             mCountDownTimer.cancel();
         } catch (Exception e) {
@@ -897,7 +897,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     private void resumeGame() {
         if (sound) mClick.start();
 
-        Log.e(TAG, "time resume  > " + pauseCounter + " - " + currentCounter);
+        // Log.ef(TAG, "time resume  > " + pauseCounter + " - " + currentCounter);
         layoutQuiz.setVisibility(View.VISIBLE);
         tvTimer.setVisibility(View.VISIBLE);
 

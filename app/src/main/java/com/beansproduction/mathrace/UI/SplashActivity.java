@@ -100,12 +100,12 @@ public class SplashActivity extends BaseActivity {
             for (Signature s : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(s.toByteArray());
-                Log.e("keyHash",Base64.encodeToString(md.digest(),Base64.DEFAULT));
+                // Log.e("keyHash",Base64.encodeToString(md.digest(),Base64.DEFAULT));
 
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("keyHash"," -e --  "+e.getMessage());
+            // Log.e("keyHash"," -e --  "+e.getMessage());
 
         }
     }

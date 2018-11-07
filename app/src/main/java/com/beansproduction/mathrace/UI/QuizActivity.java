@@ -271,7 +271,7 @@ public class QuizActivity extends BaseActivity {
                         "\n" + getResources().getString(R.string.level) + " : " + current_level);
 
                 if (layoutQuiz.getVisibility() == View.VISIBLE) {
-                    Log.e("FQ in Quiz" + TAG, saved_score + " - " + score + " - " + saved_level);
+                    // Log.e("FQ in Quiz" + TAG, saved_score + " - " + score + " - " + saved_level);
                     goToMain(score, saved_score, saved_level);
                 }
             }
@@ -313,7 +313,7 @@ public class QuizActivity extends BaseActivity {
 
     void pauseGame() {
         pause_counter = currentCounter;
-        Log.e(TAG, " timer > pause >> " + pause_counter + " - " + currentCounter);
+        // Log.e(TAG, " timer > pause >> " + pause_counter + " - " + currentCounter);
         layoutQuiz.setVisibility(View.GONE);
         tvTimer.setVisibility(View.GONE);
         getNewQuestion(current_level);
@@ -324,6 +324,6 @@ public class QuizActivity extends BaseActivity {
         layoutQuiz.setVisibility(View.VISIBLE);
         tvTimer.setVisibility(View.VISIBLE);
         doIn(pause_counter);
-        Log.e(TAG, " timer > resume >> " + pause_counter + " - " + currentCounter);
+        // Log.e(TAG, " timer > resume >> " + pause_counter + " - " + currentCounter);
     }
 }

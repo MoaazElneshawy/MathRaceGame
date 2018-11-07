@@ -53,7 +53,7 @@
     <string name="quiz_back">You can\'t go back until the 20s finished</string>
 
     <string name="internet_connection_error">No Internet Connection</string>
-
+<string name="default_notification_channel_id">121512</string>
     ///// ads ids
     <string name="banner_id">ca-app-pub-1466874792315947/2269505814</string>
     <string name="interstitial_id">ca-app-pub-1466874792315947/4241063033</string>

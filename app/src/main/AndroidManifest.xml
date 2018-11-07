@@ -24,10 +24,6 @@
             android:name=".UI.MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".UI.FastQuizActivity"
-            android:noHistory="true"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".UI.StartActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -53,6 +49,23 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-1466874792315947~9465469551"/>
+
+
+        //// firebase notifications
+        <service android:name=".Utilities.FirebaseMessagingClass">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/notification_icon" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+
 
     </application>
 

@@ -56,6 +56,8 @@
     <string name="share_text">على لعبة Math-Race , هل يمكنك هزيمتي ؟</string>
 
     <string name="internet_connection_error">لا يوجد اتصال بالانترنت</string>
+    <string name="default_notification_channel_id">121512</string>
+
 
     ///// ads ids
     <string name="banner_id">ca-app-pub-1466874792315947/2269505814</string>

@@ -102,7 +102,7 @@ public class StartActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(TAG, "onPause");
+        // Log.e(TAG, "onPause");
 
         if (sharedPrefUtilities.getBgAudio())
             mBackground.pause();
@@ -111,7 +111,7 @@ public class StartActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "OnResume");
+        // Log.e(TAG, "OnResume");
         if (sharedPrefUtilities.getBgAudio() && !mBackground.isPlaying())
             mBackground.start();
 
