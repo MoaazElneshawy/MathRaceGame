@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Math Race</string>
-    <string name="timer">Timer</string>
+    <string name="timer">Time in Seconds</string>
     <string name="score">Score</string>
     <string name="share_text">on Math-Race , Can you beat me ?</string>
     <string name="level">Level</string>
@@ -20,6 +20,7 @@
     <string name="settings">Settings</string>
     <string name="save">Save</string>
     <string name="share_on_facebook">Share Your Score</string>
+    <string name="share_pic_on_facebook">Share Screenshot</string>
     <string name="about">About</string>
     <string name="new_high_score">Yeah , new high score</string>
     <string name="last_high_score">your last high score</string>
@@ -40,7 +41,8 @@
     <string name="quiz_not_show_again">Do not show it again</string>
     <string name="about_app">
         Math-Race is a game application to test your math skills\n\n
-        The application is designed with a 15 timer which will count down\n\n
+        The application is designed with a 15 timer which will count down in Normal Mode\n\n
+        In Custom Mode , you can customize the time , operations and starting level\n\n
         After every 10 points , a new level starts with more complexity\n\n
         You can select language and audio status from setting icon\n\n
         This application is a product for Bean Production\n\n
@@ -53,11 +55,23 @@
     <string name="quiz_back">You can\'t go back until the 20s finished</string>
 
     <string name="internet_connection_error">No Internet Connection</string>
-<string name="default_notification_channel_id">121512</string>
+    <string name="default_notification_channel_id">121512</string>
+    <string name="share_image_error">Make sure that Facebook App is installed</string>
+    <string name="in_progress">Wait , Sharing is in progress</string>
     ///// ads ids
     <string name="banner_id">ca-app-pub-1466874792315947/2269505814</string>
     <string name="interstitial_id">ca-app-pub-1466874792315947/4241063033</string>
     <string name="rewarded_id">ca-app-pub-1466874792315947/7940634895</string>
     <string name="ads_app_id">ca-app-pub-1466874792315947~9465469551</string>
 
+    //// start dialog
+    <string name="game_mode">Game Mode</string>
+    <string name="normal_mode">Normal Mode</string>
+    <string name="normal_mode_hint">starts with a 15s timer, from level 1 and ability to play fast quiz and watch video to gain extra seconds</string>
+    <string name="custom_mode">Custom Mode</string>
+    <string name="custom_mode_hint">customize your time, operations and starting level</string>
+    <string name="custom_timer">Time</string>
+    <string name="custom_level">Starts with level</string>
+    <string name="custom_operations">Choose Operations</string>
+    <string name="custom_no_selection">In Custom Mode , You have to choose at least one operation</string>
 </resources>

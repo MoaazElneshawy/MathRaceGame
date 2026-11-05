@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -28,6 +29,7 @@ import com.beansproduction.mathrace.R;
 import com.beansproduction.mathrace.Utilities.BaseActivity;
 import com.beansproduction.mathrace.Utilities.SharedPrefUtilities;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Locale;
 
@@ -87,6 +89,12 @@ public class StartActivity extends BaseActivity {
         if (sharedPrefUtilities.getBgAudio()) {
             mBackground.start();
         }
+
+//        try {
+//            Log.e(TAG, "token > " + FirebaseInstanceId.getInstance().getToken());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void setAdmob() {
@@ -252,6 +260,7 @@ public class StartActivity extends BaseActivity {
             mClick.start();
         }
         goToGame();
+
     }
 
     long mLastClickTime = 0;

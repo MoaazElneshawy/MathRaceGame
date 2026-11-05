@@ -7,8 +7,8 @@ android {
         applicationId "com.beansproduction.mathrace"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 3
-        versionName "1.1.1"
+        versionCode 8
+        versionName "2.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -45,6 +45,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
     // facebook
     implementation 'com.facebook.android:facebook-share:[4,5)'
+    implementation 'com.facebook.android:facebook-applinks:[4,5)'
+
+    // picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
 
 
 }

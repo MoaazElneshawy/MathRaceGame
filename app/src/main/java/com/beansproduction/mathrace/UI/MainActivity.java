@@ -2,10 +2,12 @@ package com.beansproduction.mathrace.UI;
 
 import android.animation.Animator;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
@@ -15,17 +17,27 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +49,8 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareContent;
 import com.facebook.share.model.ShareHashtag;
 import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -50,6 +64,12 @@ import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.beansproduction.mathrace.Models.TaskModel;
 import com.beansproduction.mathrace.R;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -84,15 +104,13 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     @BindView(R.id.main_quiz_layout)
     LinearLayout layoutQuiz;
     @BindView(R.id.main_game_over_layout)
-    LinearLayout layoutGameOver;
+    NestedScrollView layoutGameOver;
     @BindView(R.id.main_game_over_btn_watch_video)
     Button btnWatchVideo;
     @BindView(R.id.main_game_over_btn_to_quiz)
     Button btnPlayQuiz;
     @BindView(R.id.main_game_over_btn_start_again)
     Button btnStartAgain;
-    @BindView(R.id.main_game_over_btn_share_on_fb)
-    Button btnShareOnFb;
     @BindView(R.id.main_game_over_tv_score)
     TextView tvGameOverScore;
     @BindView(R.id.main_game_over_tv_quiz_hint)
@@ -101,6 +119,12 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     TextView tvVideoHint;
     @BindView(R.id.main_game_over_iv_status)
     ImageView ivPlayerStatus;
+    //    @BindView(R.id.main_screenshot_fbtn)
+//    FloatingActionButton fbtnScreenshot;
+    @BindView(R.id.share_pic_layout)
+    LinearLayout sharePicLayout;
+    @BindView(R.id.share_text_layout)
+    LinearLayout shareTextLayout;
 
     CallbackManager callbackManager;
     ShareDialog shareDialog;
@@ -108,7 +132,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     long mainCounter = 15500, currentCounter = 0, pauseCounter = 0, mLastClickTime = 0;
     int current_level = 1, questions_score = 0, watched_video_count = 0, played_quiz_count = 0, score = 0, bg_audio_position = 0;
     public static final int REQUEST_CODE = 10;
-    Dialog mDialogSettings, mDialogBack;
+    Dialog mDialogSettings, mDialogBack, mDialogStart;
     MediaPlayer mClick, mBackground;
     private AdView mAdView;
     private InterstitialAd interstitialAd;
@@ -117,9 +141,11 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     AdRequest adRequest;
     TaskModel model;
     public static final String TAG = "MainActivity";
-    boolean isCorrect, sound, bg_sound, isNewHighScore, gameFinished = true, gamePaused = false, pauseByVideo = false, hasNetwork;
+    boolean isCorrect, sound, bg_sound, isNewHighScore, gameFinished = true, gamePaused = false, pauseByVideo = false, hasNetwork, isCustom, isFromQuiz = false;
     SharedPrefUtilities sharedPrefUtilities;
     String language;
+    int op_add = 0, op_minus = 0, op_multiply = 0, op_division = 0, saved_custom_level = 0, saved_custom_time = R.id.dialog_start_rb_time_thirty;
+    List<Integer> levels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +160,6 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         }
         callbackManager = CallbackManager.Factory.create();
         settingFB();
-
         MobileAds.initialize(this, getString(R.string.ads_app_id));
         sharedPrefUtilities = new SharedPrefUtilities(this);
 //        onChangeSoundListener = (OnChangeSoundListener) getApplicationContext();
@@ -153,8 +178,10 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             bg_audio_position = i.getIntExtra("audio_position", 0);
 
         }
+        setAdmob();
 
         if (i.hasExtra("score")) {
+            isFromQuiz = true;
             int saved_score = i.getIntExtra("score", 0);
             long time = i.getLongExtra("time", 0l);
             int saved_level = i.getIntExtra("level", 0);
@@ -169,16 +196,17 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                 Toast.makeText(this, getString(R.string.quiz_sucess), Toast.LENGTH_LONG).show();
             } else {
                 layoutQuiz.setVisibility(View.GONE);
+//                fbtnScreenshot.setVisibility(View.VISIBLE);
                 layoutGameOver.setVisibility(View.VISIBLE);
                 tvGameOverScore.setText(R.string.quiz_failed);
                 ivPlayerStatus.setImageResource(R.drawable.ic_loser);
             }
         } else {
-            doIn(mainCounter);
-            getNewQuestion(current_level);
+            setStartDialog(isFromQuiz);
+//            doIn(mainCounter);
+//            getNewQuestion(current_level);
             layoutQuiz.setVisibility(View.VISIBLE);
         }
-        setAdmob();
 
         if (bg_audio_position != 0) {
             mBackground.seekTo(bg_audio_position);
@@ -192,16 +220,15 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         interstitialAd.setAdUnitId(getString(R.string.interstitial_id));
         adRequest = new AdRequest.Builder().build();
         interstitialAd.loadAd(adRequest);
-
         rewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         rewardedVideoAd.setRewardedVideoAdListener(this);
         loadRewardedVideoAd();
-
 
     }
 
 
     void doIn(final long time) {
+
         if (mCountDownTimer != null) {
             mCountDownTimer.cancel();
         }
@@ -212,7 +239,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                 tvScore.setText(getResources().getString(R.string.score) + " : " + score +
                         "\n" + getResources().getString(R.string.level) + "  : " + current_level);
                 currentCounter = millisUntilFinished;
-
+//                fbtnScreenshot.setVisibility(View.GONE);
                 tvTimer.setText("" + millisUntilFinished / 1000);
                 tvScore.setVisibility(View.VISIBLE);
                 gameFinished = false;
@@ -224,7 +251,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                 tvScore.setText(getResources().getString(R.string.score) + " : " + score +
                         "\n" + getResources().getString(R.string.level) + " : " + current_level);
                 tvScore.setVisibility(View.GONE);
-
+//                fbtnScreenshot.setVisibility(View.VISIBLE);
 //                ivSettings.setVisibility(View.VISIBLE);
                 currentCounter = 0l;
 
@@ -237,86 +264,37 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                     tvGameOverScore.setText(getResources().getString(R.string.game_over_score) + " ( " + score + " ) \n"
                             + getResources().getString(R.string.last_high_score) + " ( " + s + " )");
                 }
-                if ((!rewardedVideoAd.isLoaded()) || (sharedPrefUtilities.getWatchedVideo() == 3)) {
+
+                if (!isCustom) {
+                    if ((!rewardedVideoAd.isLoaded()) || (sharedPrefUtilities.getWatchedVideo() == 3)) {
+                        btnWatchVideo.setVisibility(View.GONE);
+                        tvVideoHint.setVisibility(View.GONE);
+                    } else {
+                        btnWatchVideo.setVisibility(View.VISIBLE);
+                        tvVideoHint.setVisibility(View.VISIBLE);
+                    }
+
+                    if (sharedPrefUtilities.getPlayedQuiz() == 5) {
+                        btnPlayQuiz.setVisibility(View.GONE);
+                        tvQuizHint.setVisibility(View.GONE);
+                    } else {
+                        btnPlayQuiz.setVisibility(View.VISIBLE);
+                        tvQuizHint.setVisibility(View.VISIBLE);
+                    }
+
+                } else {
                     btnWatchVideo.setVisibility(View.GONE);
                     tvVideoHint.setVisibility(View.GONE);
-                } else {
-                    btnWatchVideo.setVisibility(View.VISIBLE);
-                    tvVideoHint.setVisibility(View.VISIBLE);
-                }
-                if (sharedPrefUtilities.getPlayedQuiz() == 5) {
                     btnPlayQuiz.setVisibility(View.GONE);
                     tvQuizHint.setVisibility(View.GONE);
                 }
 
-//                if (!pause)
                 performAnimation(layoutQuiz, layoutGameOver);
             }
         }.start();
 
 
     }
-
-//    void savedDoIn(final long time) {
-//
-//        if (mCountDownTimer != null) {
-//            mCountDownTimer.cancel();
-//        }
-//
-//        mCountDownTimer = new CountDownTimer(time, 1000) {
-//
-//            public void onTick(long millisUntilFinished) {
-//                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
-//                        "\n" + getResources().getString(R.string.level) + "  : " + current_level);
-//                currentCounter = millisUntilFinished;
-//
-//                tvTimer.setText("" + millisUntilFinished / 1000);
-//                gameFinished = false;
-//                tvScore.setVisibility(View.VISIBLE);
-//            }
-//
-//            public void onFinish() {
-//                int s = getHighScore(score);
-//                tvTimer.setText("0");
-//                tvScore.setText(getResources().getString(R.string.score) + " : " + score +
-//                        "\n" + getResources().getString(R.string.level) + " : " + current_level);
-//                tvScore.setVisibility(View.GONE);
-//                currentCounter = 0l;
-//
-//                gameFinished = true;
-//                if (isNewHighScore) {
-//                    ivPlayerStatus.setImageResource(R.drawable.ic_winner);
-//                    tvGameOverScore.setText(getResources().getString(R.string.new_high_score) + " ( " + score + " )");
-//                } else {
-//                    ivPlayerStatus.setImageResource(R.drawable.ic_loser);
-//                    tvGameOverScore.setText(getResources().getString(R.string.game_over_score) + " ( " + score + " ) \n"
-//                            + getResources().getString(R.string.last_high_score) + " ( " + s + " )");
-//                }
-//
-//                if ((!rewardedVideoAd.isLoaded()) || (sharedPrefUtilities.getWatchedVideo() == 3)) {
-//                    btnWatchVideo.setVisibility(View.GONE);
-//                    tvVideoHint.setVisibility(View.GONE);
-//                } else {
-//                    btnWatchVideo.setVisibility(View.VISIBLE);
-//                    tvVideoHint.setVisibility(View.VISIBLE);
-//                }
-//                if (sharedPrefUtilities.getPlayedQuiz() == 5) {
-//                    btnPlayQuiz.setVisibility(View.GONE);
-//                    tvQuizHint.setVisibility(View.GONE);
-//                }
-//                if (time == 0) {
-//                    btnWatchVideo.setVisibility(View.GONE);
-//                    tvVideoHint.setVisibility(View.GONE);
-//                    btnPlayQuiz.setVisibility(View.GONE);
-//                    tvQuizHint.setVisibility(View.GONE);
-//                }
-//
-//                performAnimation(layoutQuiz, layoutGameOver);
-//            }
-//        }.start();
-//
-//
-//    }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -330,7 +308,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                doIn(mainCounter);
+//                Log.e(TAG, "Facebook registration success");
             }
 
             @Override
@@ -346,7 +324,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     }
 
-    @OnClick(R.id.main_game_over_btn_share_on_fb)
+    @OnClick({R.id.share_text_layout, R.id.share_text_tv, R.id.share_text_iv})
     void shareOnFB() {
         if (hasNetwork) {
             if (ShareDialog.canShow(ShareLinkContent.class)) {
@@ -363,7 +341,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
                         .build();
 
                 shareDialog.show(content);
-
+                Toast.makeText(this, getString(R.string.in_progress), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(this, getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
@@ -383,6 +361,11 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             public void onAnimationEnd(Animator animator) {
                 viewToHide.setVisibility(View.GONE);
                 viewToShow.setVisibility(View.VISIBLE);
+                if (layoutGameOver.getVisibility() == View.VISIBLE) {
+                    mAdView.setVisibility(View.GONE);
+                } else {
+                    mAdView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -409,11 +392,8 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
     void startAgain() {
         if (sound) mClick.start();
         if (bg_sound && !mBackground.isPlaying()) mBackground.start();
-        doIn(mainCounter);
-        current_level = 1;
-        score = 0;
-        questions_score = 0;
-        getNewQuestion(current_level);
+
+        setStartDialog(false);
         performAnimation(layoutGameOver, layoutQuiz);
     }
 
@@ -501,7 +481,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mDialogSettings.setCancelable(true);
+        mDialogSettings.setCancelable(false);
         ImageView mIvAudio = mDialogSettings.findViewById(R.id.dialog_setting_iv_audio);
         ImageView mIvLang = mDialogSettings.findViewById(R.id.dialog_setting_iv_language);
         ImageView mIvBgAudio = mDialogSettings.findViewById(R.id.dialog_setting_iv_bg);
@@ -583,6 +563,212 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     }
 
+    private void setStartDialog(boolean isFromQuiz) {
+        mAdView.setVisibility(View.VISIBLE);
+        score = 0;
+        current_level = 1;
+        levels = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            levels.add(i, (i + 1));
+        }
+        mDialogStart = new Dialog(this);
+        mDialogStart.setContentView(R.layout.dialog_start);
+        try {
+            mDialogStart.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            mDialogStart.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mDialogStart.setCancelable(false);
+        RadioGroup rgMode = mDialogStart.findViewById(R.id.dialog_start_rg_mode);
+        final RadioButton rbTimeThirty = mDialogStart.findViewById(R.id.dialog_start_rb_time_thirty);
+        final RadioButton rbTimeSixty = mDialogStart.findViewById(R.id.dialog_start_rb_time_sixty);
+        final RadioButton rbTimeTwelve = mDialogStart.findViewById(R.id.dialog_start_rb_time_twelve);
+        final RadioButton rbNormal = mDialogStart.findViewById(R.id.dialog_start_rb_normal_mode);
+        final RadioButton rbCustom = mDialogStart.findViewById(R.id.dialog_start_rb_custome_mode);
+        final CheckBox cbAdd = mDialogStart.findViewById(R.id.dialog_start_cb_add);
+        final CheckBox cbMinus = mDialogStart.findViewById(R.id.dialog_start_cb_minus);
+        final CheckBox cbMultiply = mDialogStart.findViewById(R.id.dialog_start_cb_multiply);
+        final CheckBox cbDivision = mDialogStart.findViewById(R.id.dialog_start_cb_division);
+        final ImageView ivAdd = mDialogStart.findViewById(R.id.dialog_start_iv_add);
+        final ImageView ivMinus = mDialogStart.findViewById(R.id.dialog_start_iv_minus);
+        final ImageView ivMultiply = mDialogStart.findViewById(R.id.dialog_start_iv_multiply);
+        final ImageView ivDivision = mDialogStart.findViewById(R.id.dialog_start_iv_division);
+        final LinearLayout operationsLayout = mDialogStart.findViewById(R.id.dialog_start_operations_layout);
+        final Spinner levelsSpinner = mDialogStart.findViewById(R.id.dialog_start_spinner_level);
+        ArrayAdapter spinnerAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, levels);
+
+        levelsSpinner.setAdapter(spinnerAdapter);
+        Button btnStart = mDialogStart.findViewById(R.id.dialog_start_btn);
+
+        switch (saved_custom_time) {
+            case R.id.dialog_start_rb_time_thirty:
+                rbTimeThirty.setChecked(true);
+                break;
+            case R.id.dialog_start_rb_time_sixty:
+                rbTimeSixty.setChecked(true);
+                break;
+            case R.id.dialog_start_rb_time_twelve:
+                rbTimeTwelve.setChecked(true);
+                break;
+            default:
+                rbTimeThirty.setChecked(true);
+                break;
+        }
+
+        if (!isFromQuiz)
+            mDialogStart.show();
+
+        if (isCustom) rbCustom.setChecked(true);
+        else rbNormal.setChecked(true);
+
+        if (op_add == 1) cbAdd.setChecked(true);
+        if (op_minus == 1) cbMinus.setChecked(true);
+        if (op_multiply == 1) cbMultiply.setChecked(true);
+        if (op_division == 1) cbDivision.setChecked(true);
+        levelsSpinner.setSelection(saved_custom_level);
+
+        if (rbNormal.isChecked()) {
+            cbAdd.setEnabled(false);
+            cbMinus.setEnabled(false);
+            cbMultiply.setEnabled(false);
+            cbDivision.setEnabled(false);
+            ivAdd.setEnabled(false);
+            ivMultiply.setEnabled(false);
+            ivMinus.setEnabled(false);
+            ivDivision.setEnabled(false);
+            rbTimeThirty.setEnabled(false);
+            rbTimeSixty.setEnabled(false);
+            rbTimeTwelve.setEnabled(false);
+            levelsSpinner.setEnabled(false);
+        } else {
+            cbAdd.setEnabled(true);
+            cbMinus.setEnabled(true);
+            cbMultiply.setEnabled(true);
+            cbDivision.setEnabled(true);
+            ivAdd.setEnabled(true);
+            ivMultiply.setEnabled(true);
+            ivMinus.setEnabled(true);
+            ivDivision.setEnabled(true);
+            rbTimeThirty.setEnabled(true);
+            rbTimeSixty.setEnabled(true);
+            rbTimeTwelve.setEnabled(true);
+            levelsSpinner.setEnabled(true);
+        }
+
+        rgMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i == R.id.dialog_start_rb_normal_mode) {
+                    cbAdd.setEnabled(false);
+                    cbMinus.setEnabled(false);
+                    cbMultiply.setEnabled(false);
+                    cbDivision.setEnabled(false);
+                    ivAdd.setEnabled(false);
+                    ivMultiply.setEnabled(false);
+                    ivMinus.setEnabled(false);
+                    ivDivision.setEnabled(false);
+                    rbTimeThirty.setEnabled(false);
+                    rbTimeSixty.setEnabled(false);
+                    rbTimeTwelve.setEnabled(false);
+                    levelsSpinner.setEnabled(false);
+                } else {
+                    cbAdd.setEnabled(true);
+                    levelsSpinner.setEnabled(true);
+                    cbMinus.setEnabled(true);
+                    cbMultiply.setEnabled(true);
+                    cbDivision.setEnabled(true);
+                    ivAdd.setEnabled(true);
+                    ivMultiply.setEnabled(true);
+                    ivMinus.setEnabled(true);
+                    ivDivision.setEnabled(true);
+                    rbTimeThirty.setEnabled(true);
+                    rbTimeSixty.setEnabled(true);
+                    rbTimeTwelve.setEnabled(true);
+                }
+            }
+        });
+
+
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (rbCustom.isSelected() || rbCustom.isChecked()) {
+                    isCustom = true;
+                } else {
+                    isCustom = false;
+                }
+                if (rbNormal.isSelected() || rbNormal.isChecked()) {
+                    isCustom = false;
+                } else {
+                    isCustom = true;
+                }
+
+                if (rbCustom.isChecked() || rbCustom.isSelected()) {
+                    if (rbTimeThirty.isSelected() || rbTimeThirty.isChecked()) {
+                        mainCounter = 30500;
+//                        mainCounter = 3500;
+                        saved_custom_time = rbTimeThirty.getId();
+                    } else if (rbTimeSixty.isSelected() || rbTimeSixty.isChecked()) {
+                        mainCounter = 60500;
+//                        mainCounter = 6500;
+                        saved_custom_time = rbTimeSixty.getId();
+                    } else if (rbTimeTwelve.isChecked() || rbTimeTwelve.isSelected()) {
+                        mainCounter = 120500;
+//                        mainCounter = 12500;
+                        saved_custom_time = rbTimeTwelve.getId();
+                    } else {
+                        mainCounter = 15500;
+//                        mainCounter = 5500;
+                    }
+
+                    if (cbAdd.isChecked() || cbAdd.isSelected()) {
+                        op_add = 1;
+                    } else {
+                        op_add = 0;
+                    }
+
+                    if (cbMinus.isChecked() || cbMinus.isSelected()) {
+                        op_minus = 1;
+                    } else {
+                        op_minus = 0;
+                    }
+
+                    if (cbDivision.isChecked() || cbDivision.isSelected()) {
+                        op_division = 1;
+                    } else {
+                        op_division = 0;
+                    }
+
+                    if (cbMultiply.isChecked() || cbMultiply.isSelected()) {
+                        op_multiply = 1;
+                    } else {
+                        op_multiply = 0;
+                    }
+                    saved_custom_level = levelsSpinner.getSelectedItemPosition();
+                }
+
+                if (!isCustom) {
+                    mDialogStart.dismiss();
+                    mainCounter = 15500;
+                    current_level = 1;
+                    getNewQuestion(current_level);
+                    doIn(mainCounter);
+                } else {
+                    if (op_add == 0 && op_minus == 0 && op_multiply == 0 && op_division == 0) {
+                        operationsLayout.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake));
+                        Toast.makeText(MainActivity.this, getString(R.string.custom_no_selection), Toast.LENGTH_SHORT).show();
+                    } else {
+                        mDialogStart.dismiss();
+                        current_level = levelsSpinner.getSelectedItemPosition() + 1;
+                        getNewCustomQuestion(op_add, op_minus, op_multiply, op_division, current_level);
+                        doIn(mainCounter);
+                    }
+                }
+            }
+        });
+    }
+
     private void setDialogBack() {
         mDialogBack = new Dialog(this);
         mDialogBack.setContentView(R.layout.dialog_back);
@@ -626,6 +812,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+
     }
 
     @OnClick({R.id.main_btn_answer1, R.id.main_btn_answer2, R.id.main_btn_answer3, R.id.main_btn_answer4})
@@ -683,20 +870,26 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             selected.setBackground(getResources().getDrawable(R.drawable.wrong_answer_background));
         }
         if (isCorrect) {
-            currentCounter += 2000;
+            if (isCustom) {
+                currentCounter += 2300;
+            } else {
+                currentCounter += 1300;
+            }
             doIn(currentCounter);
         }
         startNewLevel();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                getNewQuestion(current_level);
+                if (isCustom)
+                    getNewCustomQuestion(op_add, op_minus, op_multiply, op_division, current_level);
+                else
+                    getNewQuestion(current_level);
             }
         }, 500);
     }
 
     private void getNewQuestion(int current_level) {
-
 
         btnAnswer1.setBackground(getResources().getDrawable(R.drawable.answers_background));
         btnAnswer2.setBackground(getResources().getDrawable(R.drawable.answers_background));
@@ -704,6 +897,32 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         btnAnswer4.setBackground(getResources().getDrawable(R.drawable.answers_background));
 
         List<String> list = MathRaceQuestionsGenerator.getQuestion(current_level);
+        TaskModel model = new TaskModel();
+
+        model.setQuestion(list.get(0) + "  " + list.get(1) + "  " + list.get(2));
+        model.setAnswer1(list.get(4));
+        model.setAnswer2(list.get(5));
+        model.setAnswer3(list.get(6));
+        model.setAnswer4(list.get(7));
+        model.setCorrect_answer(list.get(8));
+        tvQuestion.setText(model.getQuestion());
+        btnAnswer1.setText(model.getAnswer1());
+        btnAnswer2.setText(model.getAnswer2());
+        btnAnswer3.setText(model.getAnswer3());
+        btnAnswer4.setText(model.getAnswer4());
+        setModel(model);
+
+    }
+
+    private void getNewCustomQuestion(int op_add, int op_minus, int op_multiply, int op_division, int current_level) {
+//        Log.e(TAG, "Custom Question > " + op_add + " - " + op_minus + " - " + op_multiply + " - " + op_division + " - " + current_level);
+
+        btnAnswer1.setBackground(getResources().getDrawable(R.drawable.answers_background));
+        btnAnswer2.setBackground(getResources().getDrawable(R.drawable.answers_background));
+        btnAnswer3.setBackground(getResources().getDrawable(R.drawable.answers_background));
+        btnAnswer4.setBackground(getResources().getDrawable(R.drawable.answers_background));
+
+        List<String> list = MathRaceQuestionsGenerator.getCustomQuestion(op_add, op_minus, op_multiply, op_division, current_level);
         TaskModel model = new TaskModel();
 
         model.setQuestion(list.get(0) + "  " + list.get(1) + "  " + list.get(2));
@@ -738,7 +957,6 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     @Override
     protected void onStop() {
-        super.onStop();
         if (mDialogSettings != null) {
             mDialogSettings.cancel();
             mDialogSettings = null;
@@ -748,6 +966,11 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
             mDialogBack.cancel();
             mDialogBack = null;
         }
+        if (mDialogStart != null) {
+            mDialogStart.cancel();
+            mDialogStart = null;
+        }
+        super.onStop();
     }
 
     private void loadRewardedVideoAd() {
@@ -849,7 +1072,7 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
 
     int getHighScore(int newScore) {
         int saved = sharedPrefUtilities.getHighScore();
-        if (newScore > saved) {
+        if (newScore >= saved) {
             isNewHighScore = true;
             sharedPrefUtilities.setHighScore(newScore);
             return newScore;
@@ -901,22 +1124,74 @@ public class MainActivity extends BaseActivity implements RewardedVideoAdListene
         layoutQuiz.setVisibility(View.VISIBLE);
         tvTimer.setVisibility(View.VISIBLE);
 
-        getNewQuestion(current_level);
+        if (isCustom)
+            getNewCustomQuestion(op_add, op_minus, op_multiply, op_division, current_level);
+        else
+            getNewQuestion(current_level);
+
         doIn(pauseCounter);
 
     }
 
 
     private void isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        if (activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting()) {
-            //  connected
-            hasNetwork = true;
-        } else {
-            // code if not connected
-            hasNetwork = false;
+        try {
+            ConnectivityManager connectivityManager
+                    = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting()) {
+                //  connected
+                hasNetwork = true;
+            } else {
+                // code if not connected
+                hasNetwork = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @OnClick({R.id.share_pic_layout, R.id.share_pic_iv, R.id.share_pic_tv})
+    void performTakeScreenshot() {
+        takeScreenshot();
+    }
+
+    private void takeScreenshot() {
+        try {
+            View v1 = getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            shareScreenshotOnFB(bitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    private void shareScreenshotOnFB(Bitmap bitmap) {
+        SharePhoto.Builder builder = new SharePhoto.Builder();
+        builder.setBitmap(bitmap);
+        builder.setCaption("I am the Boss !");
+        SharePhoto photo = builder.build();
+        try {
+            if (hasNetwork) {
+                if (ShareDialog.canShow(SharePhotoContent.class)) {
+                    SharePhotoContent cc = new SharePhotoContent.Builder()
+                            .addPhoto(photo)
+                            .build();
+                    shareDialog.show(cc);
+                    Toast.makeText(this, getString(R.string.in_progress), Toast.LENGTH_SHORT).show();
+
+                } else {
+                    mAdView.setVisibility(View.VISIBLE);
+                    Toast.makeText(this, getString(R.string.share_image_error), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+                isNetworkAvailable();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

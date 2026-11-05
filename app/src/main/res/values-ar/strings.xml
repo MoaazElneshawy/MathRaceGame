@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Math Race</string>
-    <string name="timer">الوقت</string>
+    <string name="timer">الوقت بالثواني</string>
     <string name="score">النقاط</string>
     <string name="level">المستوى</string>
     <string name="on">يعمل</string>
@@ -20,6 +20,9 @@
     <string name="settings">الإعدادات</string>
     <string name="save">حفظ</string>
     <string name="share_on_facebook">شارك نتيجتك</string>
+    <string name="share_pic_on_facebook">شارك بصورة النتيجة</string>
+    <string name="in_progress">انتظر , سيتم المشاركة الأن</string>
+
     <string name="about">عن التطبيق</string>
     <string name="back_hint">سوف تعود إلى صفحة البداية\nان قمت بهذا , سوف تخسر اللعبة الحالية</string>
     <string name="back_to_start">عودة إلى صفحة البداية</string>
@@ -41,7 +44,8 @@
 
     <string name="about_app">
         Math-Race\n هي لعبة لاختبار مهاراتك في الرياضيات\n\n
-        اللعبة مصممة بوقت لمدة خمسة عشر ثانية و يقل بالتدريج\n\n
+        اللعبة مصممة بوقت لمدة خمسة عشر ثانية و يقل بالتدريج في اللعبة العادية\n\n
+        اللعبة المعدلة يمكنك تعديل الوقت و العمليات و مستوى البداية\n\n
         بعد كل عشرة نقاط يبدأ مستوى اعلى اكثر صعوبة\n\n
         يمكنك تغيير اللغة و اعدادات الصوت من الاعدادات\n\n
         التطبيق من ضمن تطبيقات \nBean Production\n
@@ -57,11 +61,24 @@
 
     <string name="internet_connection_error">لا يوجد اتصال بالانترنت</string>
     <string name="default_notification_channel_id">121512</string>
-
+    <string name="share_image_error">تأكد ان تطبيق الفيسبوك مثبت</string>
 
     ///// ads ids
     <string name="banner_id">ca-app-pub-1466874792315947/2269505814</string>
     <string name="interstitial_id">ca-app-pub-1466874792315947/4241063033</string>
     <string name="rewarded_id">ca-app-pub-1466874792315947/7940634895</string>
     <string name="ads_app_id">ca-app-pub-1466874792315947~9465469551</string>
+
+
+    //// start dialog
+    <string name="game_mode">طريقة اللعب</string>
+    <string name="normal_mode">اللعبة العادية</string>
+    <string name="normal_mode_hint">إبدأ من المستوى الأول بمؤقت 15 ثانية كما يمكنك مشاهدة فيديو او لعب لعبة سريعة للحصول على وقت اضافي</string>
+    <string name="custom_mode">لعبة معدلة</string>
+    <string name="custom_mode_hint">اختار ما يناسبك من الوقت و العمليات و مستوى البداية</string>
+    <string name="custom_timer">توقيت</string>
+    <string name="custom_level">البدأ من مستوى</string>
+    <string name="custom_operations">إختيار العمليات</string>
+    <string name="custom_no_selection">في اللعبة المعدلة يجب اختيار على الأقل عملية واحدة</string>
+
 </resources>

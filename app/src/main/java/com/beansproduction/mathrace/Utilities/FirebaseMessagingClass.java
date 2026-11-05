@@ -28,36 +28,62 @@ public class FirebaseMessagingClass extends FirebaseMessagingService {
 
         foregroundMessage = remoteMessage.getData().get("message");
         foregroundText = remoteMessage.getData().get("type");
+
+        // Log.e("FirebaseMessagingClass", " text > " + foregroundText + " - message > " + foregroundMessage + " --- " + remoteMessage.getData().toString());
+//        if (remoteMessage.getMessageType().contains("PlayStore")) {
+//            final String appPackageName = getApplicationContext().getPackageName(); // getPackageName() from Context or Activity object
+//            try {
+//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+//            } catch (android.content.ActivityNotFoundException anfe) {
+//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+//            }
+//            return;
+//        }
         if (foregroundMessage != null) {
-            Intent toSplash = new Intent(this, SplashActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, toSplash,
-                    PendingIntent.FLAG_ONE_SHOT);
-            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            mBuilder = new NotificationCompat.Builder(this);
-            mBuilder.setSmallIcon(R.drawable.logo);
-            mBuilder.setContentTitle(foregroundText)
-                    .setContentText(foregroundMessage)
-                    .setAutoCancel(true)
-                    .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                    .setContentIntent(pendingIntent);
+            if (foregroundText.equalsIgnoreCase("PlayStore") || foregroundMessage.equalsIgnoreCase("PlayStore")
+                    ) {
+                final String appPackageName = getApplicationContext().getPackageName(); // getPackageName() from Context or Activity object
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                }
+            } else {
+                Intent toSplash = new Intent(this, SplashActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, toSplash,
+                        PendingIntent.FLAG_ONE_SHOT);
+                mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                mBuilder = new NotificationCompat.Builder(this);
+                mBuilder.setSmallIcon(R.drawable.logo);
+                mBuilder.setContentTitle(foregroundText)
+                        .setContentText(foregroundMessage)
+                        .setAutoCancel(true)
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setContentIntent(pendingIntent);
 
 
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                int importance = NotificationManager.IMPORTANCE_HIGH;
-                NotificationChannel notificationChannel = new NotificationChannel(getString(R.string.default_notification_channel_id),
-                        "NOTIFICATION_CHANNEL_NAME", importance);
-                notificationChannel.enableLights(true);
-                notificationChannel.setLightColor(Color.RED);
-                notificationChannel.enableVibration(true);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    int importance = NotificationManager.IMPORTANCE_HIGH;
+                    NotificationChannel notificationChannel = new NotificationChannel(getString(R.string.default_notification_channel_id),
+                            "NOTIFICATION_CHANNEL_NAME", importance);
+                    notificationChannel.enableLights(true);
+                    notificationChannel.setLightColor(Color.RED);
+                    notificationChannel.enableVibration(true);
 
-                notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                assert mNotificationManager != null;
-                mBuilder.setChannelId(getString(R.string.default_notification_channel_id));
-                mNotificationManager.createNotificationChannel(notificationChannel);
+                    notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                    assert mNotificationManager != null;
+                    mBuilder.setChannelId(getString(R.string.default_notification_channel_id));
+                    mNotificationManager.createNotificationChannel(notificationChannel);
+                }
+
+                mNotificationManager.notify(0, mBuilder.build());
             }
-
-            mNotificationManager.notify(0, mBuilder.build());
         }
     }
 
+    @Override
+    public void onNewToken(String s) {
+        super.onNewToken(s);
+        // Log.e("TOOOKEN", "token > " + s);
+    }
 }

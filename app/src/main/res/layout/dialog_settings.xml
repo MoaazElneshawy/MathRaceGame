@@ -20,7 +20,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_volume" />
+            android:src="@drawable/speaker" />
 
         <RadioGroup
             android:layout_width="match_parent"
@@ -60,7 +60,7 @@
             android:layout_height="50dp"
             android:id="@+id/dialog_setting_iv_bg"
             android:layout_gravity="center"
-            android:src="@drawable/ic_music" />
+            android:src="@drawable/music" />
 
         <RadioGroup
             android:layout_width="match_parent"
@@ -100,7 +100,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_language" />
+            android:src="@drawable/global" />
 
         <RadioGroup
             android:layout_width="match_parent"

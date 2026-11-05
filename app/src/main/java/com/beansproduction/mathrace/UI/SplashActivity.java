@@ -1,5 +1,6 @@
 package com.beansproduction.mathrace.UI;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -44,7 +45,12 @@ public class SplashActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        try {
+            manager.cancelAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         sharedPrefUtilities = new SharedPrefUtilities(this);
         sharedPrefUtilities.setWatchedVideo(0);
         sharedPrefUtilities.setPlayedQuiz(0);
@@ -96,7 +102,7 @@ public class SplashActivity extends BaseActivity {
 
     void getSHAKey() {
         try {
-            PackageInfo info = getPackageManager().getPackageInfo("com.beansproduction.mathrace",PackageManager.GET_SIGNATURES);
+            PackageInfo info = getPackageManager().getPackageInfo("com.beansproduction.mathrace", PackageManager.GET_SIGNATURES);
             for (Signature s : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(s.toByteArray());
